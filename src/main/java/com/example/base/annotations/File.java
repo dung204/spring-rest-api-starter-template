@@ -10,9 +10,29 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.util.unit.DataUnit;
 
+/**
+ * Custom validation annotation for file validation including size and type constraints.
+ *
+ * <p>This annotation can be applied to parameters, fields, or type uses to validate
+ * file objects against specified criteria such as maximum file size and allowed file types.</p>
+ *
+ * <p>The validation is performed by the {@link FileValidator} class, which handles
+ * the actual validation logic and error message generation.</p>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * {@code
+ * @File(maxSize = 10, sizeUnit = DataUnit.MEGABYTES, allowedTypes = {"image/*", "application/pdf"})
+ * private MultipartFile uploadedFile;
+ * }
+ * </pre>
+ *
+ * @see FileValidator
+ * @see DataUnit
+ */
 @Documented
 @Constraint(validatedBy = FileValidator.class)
-@Target({ ElementType.PARAMETER, ElementType.FIELD })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface File {
   /**

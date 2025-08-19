@@ -2,8 +2,6 @@ package com.example.base.handlers;
 
 import com.example.base.dtos.ErrorResponseDTO;
 import io.jsonwebtoken.JwtException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -25,19 +23,27 @@ public class GlobalExceptionHandler {
     HttpRequestMethodNotSupportedException e
   ) {
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
-      new ErrorResponseDTO(HttpStatus.METHOD_NOT_ALLOWED.value(), e.getMessage())
+      ErrorResponseDTO.builder()
+        .status(HttpStatus.METHOD_NOT_ALLOWED.value())
+        .message(e.getMessage())
+        .build()
     );
   }
 
   @ExceptionHandler({ JwtException.class, IllegalArgumentException.class })
   public ResponseEntity<ErrorResponseDTO> handleJwtException(Exception e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-      new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), e.getMessage())
+      ErrorResponseDTO.builder()
+        .status(HttpStatus.BAD_REQUEST.value())
+        .message(e.getMessage())
+        .build()
     );
   }
 
   @ExceptionHandler(HandlerMethodValidationException.class)
-  public ResponseEntity<ErrorResponseDTO> handleHandlerMethodValidationException(HandlerMethodValidationException e) {
+  public ResponseEntity<ErrorResponseDTO> handleHandlerMethodValidationException(
+    HandlerMethodValidationException e
+  ) {
     String message = e
       .getParameterValidationResults()
       .stream()
@@ -47,18 +53,23 @@ public class GlobalExceptionHandler {
       .orElse("Validation failed");
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-      new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), message)
+      ErrorResponseDTO.builder().status(HttpStatus.BAD_REQUEST.value()).message(message).build()
     );
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponseDTO> handleInvalidBodyFieldException(MethodArgumentNotValidException e) {
+  public ResponseEntity<ErrorResponseDTO> handleInvalidBodyFieldException(
+    MethodArgumentNotValidException e
+  ) {
     final FieldError fieldError = e.getBindingResult().getFieldErrors().get(0);
     final String fieldName = fieldError.getField();
     final String errorMessage = fieldError.getDefaultMessage();
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-      new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Field `%s` %s".formatted(fieldName, errorMessage))
+      ErrorResponseDTO.builder()
+        .status(HttpStatus.BAD_REQUEST.value())
+        .message("Field `%s` %s".formatted(fieldName, errorMessage))
+        .build()
     );
   }
 
@@ -67,20 +78,26 @@ public class GlobalExceptionHandler {
     if (e.getStatusCode().value() >= 500) {
       log.error("Unknown error: {}", e);
       return ResponseEntity.status(e.getStatusCode()).body(
-        new ErrorResponseDTO(e.getStatusCode().value(), "Unknown error")
+        ErrorResponseDTO.builder()
+          .status(e.getStatusCode().value())
+          .message("Unknown error")
+          .build()
       );
     }
 
     return ResponseEntity.status(e.getStatusCode()).body(
-      new ErrorResponseDTO(e.getStatusCode().value(), e.getReason())
+      ErrorResponseDTO.builder().status(e.getStatusCode().value()).message(e.getReason()).build()
     );
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {
+  public ResponseEntity<ErrorResponseDTO> handleUnknownException(Exception e) {
     log.error("Unknown error: {}", e);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-      new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unknown error")
+      ErrorResponseDTO.builder()
+        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .message("Unknown error")
+        .build()
     );
   }
 }

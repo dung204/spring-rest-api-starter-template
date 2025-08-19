@@ -50,7 +50,11 @@ public final class ObjectUtils {
 
       for (PropertyDescriptor prop : sourceProps) {
         String propName = prop.getName();
-        if (!"class".equals(propName) && targetPropertyNames.contains(propName) && prop.getReadMethod() != null) {
+        if (
+          !"class".equals(propName) &&
+          targetPropertyNames.contains(propName) &&
+          prop.getReadMethod() != null
+        ) {
           Object value = sourceWrapper.getPropertyValue(propName);
 
           // Skip JsonNullable.undefined() values

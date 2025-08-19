@@ -1,6 +1,6 @@
 package com.example.modules.app.controllers;
 
-import static com.example.base.utils.RouteUtils.API_PREFIX;
+import static com.example.base.utils.AppRoutes.API_PREFIX;
 
 import com.example.base.dtos.SuccessResponseDTO;
 import com.example.modules.auth.annotations.Public;
@@ -21,13 +21,17 @@ public class AppController {
   @Operation(
     summary = "Check application health status",
     responses = {
-      @ApiResponse(responseCode = "200", description = "Application is healthy", content = @Content),
+      @ApiResponse(
+        responseCode = "200",
+        description = "Application is healthy",
+        content = @Content
+      ),
       @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
     }
   )
   @Public
   @GetMapping("/health")
   public SuccessResponseDTO<?> checkHealth() {
-    return SuccessResponseDTO.builder().status(200).message("OK").build();
+    return SuccessResponseDTO.builder().message("OK").build();
   }
 }

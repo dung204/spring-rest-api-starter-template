@@ -75,14 +75,20 @@ public class JwtService {
 
   public Jws<Claims> verifyAccessToken(String token) {
     try {
-      return Jwts.parser().verifyWith(getSecretKeyFromString(ACCESS_SECRET)).build().parseSignedClaims(token);
+      return Jwts.parser()
+        .verifyWith(getSecretKeyFromString(ACCESS_SECRET))
+        .build()
+        .parseSignedClaims(token);
     } catch (Exception e) {
       throw new InvalidCredentialsException(e.getMessage());
     }
   }
 
   public Jws<Claims> verifyRefreshToken(String token) {
-    return Jwts.parser().verifyWith(getSecretKeyFromString(REFRESH_SECRET)).build().parseSignedClaims(token);
+    return Jwts.parser()
+      .verifyWith(getSecretKeyFromString(REFRESH_SECRET))
+      .build()
+      .parseSignedClaims(token);
   }
 
   private SecretKey getSecretKeyFromString(String secret) {

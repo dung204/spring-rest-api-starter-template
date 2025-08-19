@@ -20,7 +20,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Builder(toBuilder = true)
+@Builder
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -38,7 +38,8 @@ public class Account extends BaseEntity implements UserDetails {
 
   @Enumerated(EnumType.STRING)
   @ColumnDefault("'USER'")
-  private Role role;
+  @Builder.Default
+  private Role role = Role.USER;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -29,7 +29,7 @@ The following tools will be downloaded & started by Docker Compose. If not using
 1. Clone the repository
 
 ```bash
-git clone
+git clone https://github.com/dung204/spring-rest-api-starter-template.git
 ```
 
 2. Change directory into the project folder

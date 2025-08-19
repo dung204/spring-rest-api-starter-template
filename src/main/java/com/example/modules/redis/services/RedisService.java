@@ -33,7 +33,12 @@ public class RedisService {
   public void set(@NonNull String key, @NonNull Object value, @NonNull Duration timeout) {
     try {
       redisTemplate.opsForValue().set(key, value, timeout);
-      log.debug("Set key: {} with value type: {} and timeout: {}", key, value.getClass().getSimpleName(), timeout);
+      log.debug(
+        "Set key: {} with value type: {} and timeout: {}",
+        key,
+        value.getClass().getSimpleName(),
+        timeout
+      );
     } catch (Exception e) {
       log.error("Error setting key {} with timeout: {}", key, e.getMessage());
       throw new RuntimeException("Failed to set Redis key with timeout: " + key, e);

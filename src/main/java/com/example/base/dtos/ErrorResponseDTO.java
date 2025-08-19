@@ -1,14 +1,23 @@
 package com.example.base.dtos;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+/**
+ * Data Transfer Object representing an error response.
+ * <p>
+ * This class extends {@link ResponseDTO} to provide a standardized structure
+ * for error responses in the API. It encapsulates error information including
+ * status code and error message.
+ * </p>
+ *
+ * @see ResponseDTO
+ */
+@Getter
 public class ErrorResponseDTO extends ResponseDTO {
 
-  public ErrorResponseDTO(int status, String message) {
-    this.status = status;
-    this.message = message;
+  @Builder
+  private ErrorResponseDTO(int status, String message) {
+    super(validateErrorStatus(status), message);
   }
 }

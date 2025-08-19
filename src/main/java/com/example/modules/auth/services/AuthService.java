@@ -40,7 +40,9 @@ public class AuthService {
     String email = loginRequest.getEmail();
     String password = loginRequest.getPassword();
 
-    Account account = accountsRepository.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException());
+    Account account = accountsRepository
+      .findByEmail(email)
+      .orElseThrow(() -> new InvalidCredentialsException());
 
     if (!passwordEncoder.matches(password, account.getPassword())) {
       throw new InvalidCredentialsException();
@@ -71,7 +73,9 @@ public class AuthService {
       throw new TokenInvalidatedException();
     }
 
-    final User user = usersRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+    final User user = usersRepository
+      .findById(userId)
+      .orElseThrow(() -> new UserNotFoundException());
 
     invalidateTokens(userId);
     return getTokenResponse(user);
@@ -85,7 +89,10 @@ public class AuthService {
     String currentPassword = user.getAccount().getPassword();
 
     if (currentPassword != null && request.getPassword() == null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field `password` is required for this account.");
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Field `password` is required for this account."
+      );
     }
 
     if (!passwordEncoder.matches(request.getPassword(), currentPassword)) {

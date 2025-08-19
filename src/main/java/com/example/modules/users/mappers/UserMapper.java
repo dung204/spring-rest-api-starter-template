@@ -17,6 +17,7 @@ public abstract class UserMapper {
   @Autowired
   protected MinioService minioService;
 
+  @Named("toUserProfileDTO")
   @Mapping(source = "account.email", target = "email")
   @Mapping(source = "account.role", target = "role")
   @Mapping(source = "avatar", target = "avatar", qualifiedByName = "mapAvatar")

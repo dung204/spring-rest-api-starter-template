@@ -1,7 +1,7 @@
 package com.example.modules.auth.filters;
 
 import com.example.base.dtos.ErrorResponseDTO;
-import com.example.base.utils.RouteUtils;
+import com.example.base.utils.AppRoutes;
 import com.example.modules.auth.annotations.AllowRoles;
 import com.example.modules.auth.annotations.OptionalAuth;
 import com.example.modules.auth.annotations.Public;
@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final boolean isCurrentRoutePublic = isPublicAnnotatedRoute(request);
     final boolean isCurrentRouteOptionalAuth = isOptionalAuthAnnotatedRoute(request);
 
-    if (RouteUtils.isWhitelistedRoute(currentRoute) || isCurrentRoutePublic) {
+    if (AppRoutes.isWhitelistedRoute(currentRoute) || isCurrentRoutePublic) {
       bypassAuthentication(request, response, filterChain, securityContext);
       return;
     }
@@ -76,7 +76,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     try {
-      final Jws<Claims> decodedToken = jwtService.verifyAccessToken(authorizationHeader.substring("Bearer ".length()));
+      final Jws<Claims> decodedToken = jwtService.verifyAccessToken(
+        authorizationHeader.substring("Bearer ".length())
+      );
       final Date tokenIssuedAt = decodedToken.getPayload().getIssuedAt();
       final String userId = decodedToken.getPayload().getSubject();
 
@@ -84,7 +86,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throw new TokenInvalidatedException();
       }
 
-      User user = usersRepository.findById(userId).orElseThrow(() -> new InvalidCredentialsException());
+      User user = usersRepository
+        .findById(userId)
+        .orElseThrow(() -> new InvalidCredentialsException());
 
       final String currentRole = decodedToken.getPayload().get("role", String.class);
       final List<String> allowRoles = getAllowRolesOfCurrentRoute(request)
@@ -161,12 +165,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return Collections.emptyList();
   }
 
-  private void sendUnauthorizedResponse(HttpServletResponse response, ObjectMapper objectMapper) throws IOException {
+  private void sendUnauthorizedResponse(HttpServletResponse response, ObjectMapper objectMapper)
+    throws IOException {
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
     objectMapper.writeValue(
       response.getOutputStream(),
-      new ErrorResponseDTO(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")
+      ErrorResponseDTO.builder()
+        .status(HttpStatus.UNAUTHORIZED.value())
+        .message("Unauthorized")
+        .build()
     );
   }
 

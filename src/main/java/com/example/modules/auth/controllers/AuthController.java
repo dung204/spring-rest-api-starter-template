@@ -1,6 +1,6 @@
 package com.example.modules.auth.controllers;
 
-import static com.example.base.utils.RouteUtils.AUTH_PREFIX;
+import static com.example.base.utils.AppRoutes.AUTH_PREFIX;
 
 import com.example.base.dtos.SuccessResponseDTO;
 import com.example.modules.auth.annotations.CurrentUser;
@@ -49,7 +49,11 @@ public class AuthController {
         """,
         content = @Content
       ),
-      @ApiResponse(responseCode = "401", description = "Email or password is incorrect", content = @Content),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Email or password is incorrect",
+        content = @Content
+      ),
       @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
     }
   )
@@ -81,7 +85,9 @@ public class AuthController {
   )
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
   @PostMapping("/register")
-  public SuccessResponseDTO<AuthTokenDTO> register(@RequestBody @Valid RegisterRequestDTO registerRequest) {
+  public SuccessResponseDTO<AuthTokenDTO> register(
+    @RequestBody @Valid RegisterRequestDTO registerRequest
+  ) {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(200)
       .message("Registration successful")
@@ -94,8 +100,16 @@ public class AuthController {
     summary = "Create new (refresh) tokens",
     responses = {
       @ApiResponse(responseCode = "200", description = "Refresh token successfully"),
-      @ApiResponse(responseCode = "400", description = "JWT error (malformed, expired, ...)", content = @Content),
-      @ApiResponse(responseCode = "401", description = "Refresh token is blacklisted", content = @Content),
+      @ApiResponse(
+        responseCode = "400",
+        description = "JWT error (malformed, expired, ...)",
+        content = @Content
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Refresh token is blacklisted",
+        content = @Content
+      ),
       @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
     }
   )
@@ -113,7 +127,11 @@ public class AuthController {
   @Operation(
     summary = "Logout",
     responses = {
-      @ApiResponse(responseCode = "204", description = "Logged out successfully", content = @Content),
+      @ApiResponse(
+        responseCode = "204",
+        description = "Logged out successfully",
+        content = @Content
+      ),
       @ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content),
       @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
     }
@@ -127,14 +145,21 @@ public class AuthController {
   @Operation(
     summary = "Change password of the current user",
     responses = {
-      @ApiResponse(responseCode = "204", description = "Password changed successfully", content = @Content),
+      @ApiResponse(
+        responseCode = "204",
+        description = "Password changed successfully",
+        content = @Content
+      ),
       @ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content),
       @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
     }
   )
   @PatchMapping("/password")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void changePassword(@CurrentUser User currentUser, @RequestBody @Valid ChangePasswordRequestDTO request) {
+  public void changePassword(
+    @CurrentUser User currentUser,
+    @RequestBody @Valid ChangePasswordRequestDTO request
+  ) {
     authService.changePassword(currentUser, request);
   }
 }

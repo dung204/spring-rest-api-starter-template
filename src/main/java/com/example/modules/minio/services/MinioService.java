@@ -59,7 +59,10 @@ public class MinioService {
         .build()
     );
 
-    return MinioFileResponse.builder().fileName(savedFileName).url(this.generatePresignedUrl(savedFileName)).build();
+    return MinioFileResponse.builder()
+      .fileName(savedFileName)
+      .url(this.generatePresignedUrl(savedFileName))
+      .build();
   }
 
   /**
@@ -102,7 +105,9 @@ public class MinioService {
     throws MinioException, InvalidKeyException, IOException, NoSuchAlgorithmException {
     if (fileName == null || fileName.isEmpty()) return;
 
-    this.minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(fileName).build());
+    this.minioClient.removeObject(
+      RemoveObjectArgs.builder().bucket(bucket).object(fileName).build()
+    );
   }
 
   private String sanitizeFileName(String fileName) {

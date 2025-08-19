@@ -11,11 +11,17 @@ import lombok.NonNull;
 @Builder
 public class AuthTokenDTO {
 
-  @Schema(description = "Access token for authenticated user", example = SwaggerExamples.ACCESS_TOKEN)
+  @Schema(
+    description = "Access token for authenticated user",
+    example = SwaggerExamples.ACCESS_TOKEN
+  )
   @NonNull
   private final String accessToken;
 
-  @Schema(description = "Refresh token for authenticated user", example = SwaggerExamples.REFRESH_TOKEN)
+  @Schema(
+    description = "Refresh token for authenticated user",
+    example = SwaggerExamples.REFRESH_TOKEN
+  )
   @NonNull
   private final String refreshToken;
 

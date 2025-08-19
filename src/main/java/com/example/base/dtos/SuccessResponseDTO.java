@@ -1,15 +1,40 @@
 package com.example.base.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
 
-@Data
-@SuperBuilder
-@EqualsAndHashCode(callSuper = false)
+/**
+ * A generic success response DTO that extends ResponseDTO to represent successful API responses.
+ * This class encapsulates successful HTTP responses with optional data payload.
+ *
+ * <p>The response includes:
+ * <ul>
+ *   <li>HTTP status code (defaults to 200 or validated success status)</li>
+ *   <li>Success message</li>
+ *   <li>Optional data payload of generic type T</li>
+ * </ul>
+ *
+ * @param <T> the type of data payload contained in the response
+ *
+ * @see ResponseDTO
+ */
+@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuccessResponseDTO<T> extends ResponseDTO {
 
-  private final T data;
+  private T data;
+
+  @Builder
+  private SuccessResponseDTO(@NonNull String message, T data) {
+    super(200, message);
+    this.data = data;
+  }
+
+  @Builder
+  private SuccessResponseDTO(int status, @NonNull String message, T data) {
+    super(validateSuccessStatus(status), message);
+    this.data = data;
+  }
 }

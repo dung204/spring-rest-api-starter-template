@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
 import org.openapitools.jackson.nullable.JsonNullable;
 
 @Setter
@@ -20,16 +19,11 @@ public class UpdateProfileDTO {
   @Size(min = 2)
   private JsonNullable<String> firstName = JsonNullable.undefined();
 
-  @Schema(description = "The last name of the user", example = SwaggerExamples.LAST_NAME, implementation = String.class)
-  @Size(min = 2)
-  private JsonNullable<String> lastName = JsonNullable.undefined();
-
   @Schema(
     description = "The last name of the user",
-    example = SwaggerExamples.URL,
-    implementation = String.class,
-    format = "binary"
+    example = SwaggerExamples.LAST_NAME,
+    implementation = String.class
   )
-  @URL
-  private JsonNullable<String> avatar = JsonNullable.undefined();
+  @Size(min = 2)
+  private JsonNullable<String> lastName = JsonNullable.undefined();
 }

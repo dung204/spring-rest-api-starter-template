@@ -3,13 +3,7 @@ package com.example.modules.minio.configs;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -35,9 +29,13 @@ public class MinioConfig {
   private String bucket;
 
   @Bean
-  MinioClient minioClient() throws MinioException, InvalidKeyException, IOException, NoSuchAlgorithmException {
+  MinioClient minioClient()
+    throws MinioException, InvalidKeyException, IOException, NoSuchAlgorithmException {
     log.info("Initializing MinIO client with endpoint: {}", endpoint);
-    MinioClient client = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+    MinioClient client = MinioClient.builder()
+      .endpoint(endpoint)
+      .credentials(accessKey, secretKey)
+      .build();
 
     if (!client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
       log.info("Bucket '{}' does not exist, creating it", bucket);

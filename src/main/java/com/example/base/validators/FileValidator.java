@@ -15,7 +15,10 @@ public class FileValidator implements ConstraintValidator<File, MultipartFile> {
   @Override
   public void initialize(File constraintAnnotation) {
     this.allowedTypes = Set.of(constraintAnnotation.allowedTypes());
-    this.maxSizeInBytes = DataSize.of(constraintAnnotation.maxSize(), constraintAnnotation.sizeUnit()).toBytes();
+    this.maxSizeInBytes = DataSize.of(
+      constraintAnnotation.maxSize(),
+      constraintAnnotation.sizeUnit()
+    ).toBytes();
   }
 
   @Override
@@ -23,7 +26,9 @@ public class FileValidator implements ConstraintValidator<File, MultipartFile> {
     if (file.getSize() > maxSizeInBytes) {
       context.disableDefaultConstraintViolation();
       context
-        .buildConstraintViolationWithTemplate("File size cannot exceed %s".formatted(formatDataSize(maxSizeInBytes)))
+        .buildConstraintViolationWithTemplate(
+          "File size cannot exceed %s".formatted(formatDataSize(maxSizeInBytes))
+        )
         .addConstraintViolation();
       return false;
     }

@@ -1,0 +1,41 @@
+package com.example.modules.posts.entities;
+
+import com.example.base.entities.BaseEntity;
+import com.example.modules.users.entities.User;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+
+@Builder
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "posts")
+public class Post extends BaseEntity {
+
+  @Column(nullable = false)
+  private String title;
+
+  @Lob
+  private String content;
+
+  @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
+
+  @Column(nullable = false)
+  @ColumnDefault("false")
+  private Boolean isPublic;
+}
