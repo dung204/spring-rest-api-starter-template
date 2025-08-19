@@ -44,7 +44,7 @@ cd spring-rest-api-starter-template
 
 3.2. Create a configuration file, named `application-dev.yml`, place it at `src/resources/`. The content of this file should follow the example file (`application-dev-example.yml`)
 
-4. Use `npm` to install `husky`, `prettier` & `lint-staged`:
+4. Use `npm` to install `husky`, `commitlint`, `prettier` & `lint-staged`:
 
 ```
 npm install
