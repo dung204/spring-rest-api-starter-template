@@ -1,7 +1,5 @@
 package com.example.base.dtos;
 
-import com.example.base.utils.SwaggerExamples;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

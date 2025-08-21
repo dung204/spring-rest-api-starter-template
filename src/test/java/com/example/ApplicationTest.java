@@ -1,10 +1,10 @@
-package com.example.spring_rest_api_starter_template;
+package com.example;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringRestApiStarterTemplateApplicationTests {
+class ApplicationTest {
 
   @Test
   void contextLoads() {}

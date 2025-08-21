@@ -27,14 +27,8 @@ public class SuccessResponseDTO<T> extends ResponseDTO {
   private T data;
 
   @Builder
-  private SuccessResponseDTO(@NonNull String message, T data) {
-    super(200, message);
-    this.data = data;
-  }
-
-  @Builder
-  private SuccessResponseDTO(int status, @NonNull String message, T data) {
-    super(validateSuccessStatus(status), message);
+  private SuccessResponseDTO(Integer status, @NonNull String message, T data) {
+    super(status == null ? 200 : validateSuccessStatus(status), message);
     this.data = data;
   }
 }

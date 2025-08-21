@@ -40,7 +40,7 @@ public class AuthController {
   @Operation(
     summary = "Login",
     responses = {
-      @ApiResponse(responseCode = "200", description = "Login successfully"),
+      @ApiResponse(responseCode = "201", description = "Login successfully"),
       @ApiResponse(
         responseCode = "400",
         description = """
@@ -59,10 +59,11 @@ public class AuthController {
   )
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
   @PostMapping(path = "/login")
+  @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<AuthTokenDTO> login(@RequestBody @Valid LoginRequestDTO loginRequest) {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
-      .status(200)
-      .message("Login successful")
+      .status(201)
+      .message("Login successfully")
       .data(authService.login(loginRequest))
       .build();
   }
@@ -71,7 +72,7 @@ public class AuthController {
   @Operation(
     summary = "Register",
     responses = {
-      @ApiResponse(responseCode = "200", description = "Register successfully"),
+      @ApiResponse(responseCode = "201", description = "Register successfully"),
       @ApiResponse(
         responseCode = "400",
         description = """
@@ -85,11 +86,12 @@ public class AuthController {
   )
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
   @PostMapping("/register")
+  @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<AuthTokenDTO> register(
     @RequestBody @Valid RegisterRequestDTO registerRequest
   ) {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
-      .status(200)
+      .status(201)
       .message("Registration successful")
       .data(authService.register(registerRequest))
       .build();
@@ -99,7 +101,7 @@ public class AuthController {
   @Operation(
     summary = "Create new (refresh) tokens",
     responses = {
-      @ApiResponse(responseCode = "200", description = "Refresh token successfully"),
+      @ApiResponse(responseCode = "201", description = "Refresh token successfully"),
       @ApiResponse(
         responseCode = "400",
         description = "JWT error (malformed, expired, ...)",
@@ -115,10 +117,12 @@ public class AuthController {
   )
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
   @PostMapping("/refresh")
+  @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<AuthTokenDTO> refreshToken(
     @RequestBody @Valid RefreshTokenRequestDTO refreshTokenRequestDTO
   ) {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
+      .status(201)
       .message("Refresh token successfully")
       .data(authService.refresh(refreshTokenRequestDTO.getRefreshToken()))
       .build();

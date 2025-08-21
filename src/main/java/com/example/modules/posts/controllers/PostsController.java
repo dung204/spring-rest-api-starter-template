@@ -12,7 +12,6 @@ import com.example.modules.posts.dtos.PostResponseDTO;
 import com.example.modules.posts.dtos.PostsSearchDTO;
 import com.example.modules.posts.dtos.UpdatePostDTO;
 import com.example.modules.posts.services.PostsService;
-import com.example.modules.posts.utils.PostMapper;
 import com.example.modules.users.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

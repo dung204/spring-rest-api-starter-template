@@ -3,12 +3,16 @@ package com.example.modules.users.dtos;
 import com.example.base.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.openapitools.jackson.nullable.JsonNullable;
 
-@Setter
-@Getter
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateProfileDTO {
 
   @Schema(
@@ -17,6 +21,7 @@ public class UpdateProfileDTO {
     implementation = String.class
   )
   @Size(min = 2)
+  @Builder.Default
   private JsonNullable<String> firstName = JsonNullable.undefined();
 
   @Schema(
@@ -25,5 +30,6 @@ public class UpdateProfileDTO {
     implementation = String.class
   )
   @Size(min = 2)
+  @Builder.Default
   private JsonNullable<String> lastName = JsonNullable.undefined();
 }

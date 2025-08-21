@@ -54,7 +54,7 @@ public class MeController {
     }
   )
   @GetMapping("/profile")
-  public SuccessResponseDTO<UserProfileDTO> getCurrentUser(@CurrentUser User currentUser) {
+  public SuccessResponseDTO<UserProfileDTO> getProfileOfCurrentUser(@CurrentUser User currentUser) {
     return SuccessResponseDTO.<UserProfileDTO>builder()
       .message("User profile retrieved successfully")
       .data(userMapper.toUserProfileDTO(currentUser))

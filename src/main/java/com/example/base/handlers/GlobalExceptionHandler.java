@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
@@ -32,6 +33,18 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({ JwtException.class, IllegalArgumentException.class })
   public ResponseEntity<ErrorResponseDTO> handleJwtException(Exception e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+      ErrorResponseDTO.builder()
+        .status(HttpStatus.BAD_REQUEST.value())
+        .message(e.getMessage())
+        .build()
+    );
+  }
+
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  public ResponseEntity<ErrorResponseDTO> handleMissingServletRequestPartException(
+    MissingServletRequestPartException e
+  ) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
       ErrorResponseDTO.builder()
         .status(HttpStatus.BAD_REQUEST.value())
