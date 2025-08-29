@@ -289,21 +289,4 @@ public class MeControllerTest extends BaseControllerTest {
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
   }
-
-  private UserProfileDTO createMockUserProfile(User user) {
-    return UserProfileDTO.builder()
-      .id(user.getId())
-      .email(user.getAccount().getEmail())
-      .firstName(user.getFirstName())
-      .lastName(user.getLastName())
-      .avatar(
-        user.getAvatar() == null
-          ? null
-          : MinioFileResponse.builder().fileName(user.getAvatar()).url("image url").build()
-      )
-      .role(user.getAccount().getRole().getValue())
-      .createdTimestamp(user.getCreatedTimestamp().toString())
-      .updatedTimestamp(user.getUpdatedTimestamp().toString())
-      .build();
-  }
 }

@@ -29,23 +29,12 @@ public class PaginatedSuccessResponseDTO<T> extends ResponseDTO {
 
   @Builder
   private PaginatedSuccessResponseDTO(
-    @NonNull String message,
-    @NonNull Page<T> page,
-    Map<String, Object> filters
-  ) {
-    super(200, message);
-    this.data = page.getContent();
-    this.metadata = new Metadata(page, filters);
-  }
-
-  @Builder
-  private PaginatedSuccessResponseDTO(
-    int status,
+    Integer status,
     String message,
     Page<T> page,
     Map<String, Object> filters
   ) {
-    super(status, message);
+    super(status == null ? 200 : validateSuccessStatus(status), message);
     this.data = page.getContent();
     this.metadata = new Metadata(page, filters);
   }

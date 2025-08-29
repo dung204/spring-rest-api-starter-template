@@ -48,11 +48,11 @@ public class PaginatedQueryDTO {
 
   @Parameter(description = "The current page number", example = "1")
   @Min(value = 1)
-  private int page = 1;
+  private Integer page = 1;
 
   @Parameter(description = "The number of items in a page", example = "10")
   @Min(value = 10)
-  private int pageSize = 10;
+  private Integer pageSize = 10;
 
   @Parameter(
     description = "The sorting for the query. The syntax is `{field}:{order}`. Allowed fields are: `createdTimestamp`, `updatedTimestamp`, `deletedTimestamp`."

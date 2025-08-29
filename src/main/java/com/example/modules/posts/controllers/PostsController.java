@@ -89,6 +89,7 @@ public class PostsController {
   )
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
   @PostMapping("/")
+  @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<PostResponseDTO> createPost(
     @RequestBody @Valid CreatePostDTO createPostDTO,
     @CurrentUser User currentUser

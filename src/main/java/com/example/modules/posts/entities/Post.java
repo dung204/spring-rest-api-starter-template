@@ -29,6 +29,7 @@ public class Post extends BaseEntity {
   private String title;
 
   @Lob
+  @Column(nullable = false)
   private String content;
 
   @ManyToOne(cascade = CascadeType.ALL)

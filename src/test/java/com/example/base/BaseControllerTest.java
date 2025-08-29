@@ -13,6 +13,8 @@ import com.example.modules.auth.enums.Role;
 import com.example.modules.auth.repositories.AccountsRepository;
 import com.example.modules.auth.services.AuthService;
 import com.example.modules.auth.services.JwtService;
+import com.example.modules.minio.dtos.MinioFileResponse;
+import com.example.modules.users.dtos.UserProfileDTO;
 import com.example.modules.users.entities.User;
 import com.example.modules.users.repositories.UsersRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,6 +82,23 @@ public abstract class BaseControllerTest {
     doNothing().when(authService).logout(mockUser);
 
     return new MockUserLoginPayload(accessToken, mockUser);
+  }
+
+  protected UserProfileDTO createMockUserProfile(User user) {
+    return UserProfileDTO.builder()
+      .id(user.getId())
+      .email(user.getAccount().getEmail())
+      .firstName(user.getFirstName())
+      .lastName(user.getLastName())
+      .avatar(
+        user.getAvatar() == null
+          ? null
+          : MinioFileResponse.builder().fileName(user.getAvatar()).url("image url").build()
+      )
+      .role(user.getAccount().getRole().getValue())
+      .createdTimestamp(user.getCreatedTimestamp().toString())
+      .updatedTimestamp(user.getUpdatedTimestamp().toString())
+      .build();
   }
 
   protected static record MockUserLoginPayload(String accessToken, User user) {}
