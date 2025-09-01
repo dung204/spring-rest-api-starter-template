@@ -1,4 +1,4 @@
-package com.example.modules.users.mappers;
+package com.example.modules.users.utils;
 
 import com.example.modules.minio.dtos.MinioFileResponse;
 import com.example.modules.minio.services.MinioService;

@@ -10,14 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.base.BaseControllerTest;
-import com.example.modules.minio.dtos.MinioFileResponse;
 import com.example.modules.minio.services.MinioService;
 import com.example.modules.posts.services.PostsService;
 import com.example.modules.users.dtos.UpdateProfileDTO;
 import com.example.modules.users.dtos.UserProfileDTO;
 import com.example.modules.users.entities.User;
-import com.example.modules.users.mappers.UserMapper;
 import com.example.modules.users.services.UsersService;
+import com.example.modules.users.utils.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
