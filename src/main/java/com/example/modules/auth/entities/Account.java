@@ -53,21 +53,6 @@ public class Account extends BaseEntity implements UserDetails {
   }
 
   @Override
-  public boolean isAccountNonExpired() {
-    return this.deletedTimestamp == null;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return this.deletedTimestamp == null;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return this.deletedTimestamp == null;
-  }
-
-  @Override
   public boolean isEnabled() {
     return this.deletedTimestamp == null;
   }

@@ -5,6 +5,7 @@ import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
 import com.example.modules.auth.entities.Account;
+import com.example.modules.auth.exceptions.EmailHasAlreadyBeenUsedException;
 import com.example.modules.auth.exceptions.InvalidCredentialsException;
 import com.example.modules.auth.exceptions.PasswordNotMatchException;
 import com.example.modules.auth.exceptions.TokenInvalidatedException;
@@ -19,6 +20,7 @@ import io.jsonwebtoken.Jws;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,10 +58,25 @@ public class AuthService {
     final String email = registerRequest.getEmail();
     final String password = registerRequest.getPassword();
 
-    final Account savedAccount = accountsRepository.save(
-      Account.builder().email(email).password(passwordEncoder.encode(password)).build()
-    );
-    final User savedUser = usersRepository.save(User.builder().account(savedAccount).build());
+    final Optional<Account> existingAccount = accountsRepository.findByEmail(email);
+    final User savedUser;
+
+    if (!existingAccount.isPresent()) {
+      final Account savedAccount = accountsRepository.save(
+        Account.builder().email(email).password(passwordEncoder.encode(password)).build()
+      );
+
+      savedUser = usersRepository.save(User.builder().account(savedAccount).build());
+    } else if (existingAccount.get().isEnabled()) {
+      throw new EmailHasAlreadyBeenUsedException();
+    } else {
+      final Account account = existingAccount.get();
+      account.setEmail(email);
+      account.setPassword(passwordEncoder.encode(password));
+      account.setDeletedTimestamp(null);
+      final Account savedAccount = accountsRepository.save(account);
+      savedUser = usersRepository.save(User.builder().account(savedAccount).build());
+    }
 
     return getTokenResponse(savedUser);
   }
@@ -95,7 +112,9 @@ public class AuthService {
       );
     }
 
-    if (!passwordEncoder.matches(request.getPassword(), currentPassword)) {
+    if (
+      currentPassword != null && !passwordEncoder.matches(request.getPassword(), currentPassword)
+    ) {
       throw new PasswordNotMatchException();
     }
 
