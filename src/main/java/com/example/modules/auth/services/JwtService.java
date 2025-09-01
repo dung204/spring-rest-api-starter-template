@@ -63,7 +63,7 @@ public class JwtService {
   public String generateRefreshToken(User user) {
     Instant currentInstant = Instant.now();
     Date issuedAt = Date.from(currentInstant);
-    Date expiration = Date.from(currentInstant.plusSeconds(ACCESS_EXPIRATION));
+    Date expiration = Date.from(currentInstant.plusSeconds(REFRESH_EXPIRATION));
 
     return Jwts.builder()
       .subject(user.getId())
