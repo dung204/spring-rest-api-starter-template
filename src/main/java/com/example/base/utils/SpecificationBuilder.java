@@ -84,18 +84,18 @@ public class SpecificationBuilder<T> {
     return this;
   }
 
-  public SpecificationBuilder<T> notDeleted() {
+  public <S extends SpecificationBuilder<T>> S notDeleted() {
     specifications.add((root, query, criteriaBuilder) ->
       criteriaBuilder.isNull(root.get("deletedTimestamp"))
     );
-    return this;
+    return (S) this;
   }
 
-  public SpecificationBuilder<T> deletedOnly() {
+  public <S extends SpecificationBuilder<T>> S deletedOnly() {
     specifications.add((root, query, criteriaBuilder) ->
       criteriaBuilder.isNotNull(root.get("deletedTimestamp"))
     );
-    return this;
+    return (S) this;
   }
 
   /**

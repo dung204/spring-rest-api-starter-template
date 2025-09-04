@@ -66,7 +66,7 @@ public class BaseIntegrationTest {
   protected PasswordEncoder passwordEncoder;
 
   @BeforeEach
-  void setup() {
+  protected void setup() {
     Account account = Account.builder()
       .email("email@example.com")
       .password(passwordEncoder.encode("password@123456"))

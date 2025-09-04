@@ -60,9 +60,10 @@ public class PostsService {
         .findOne(
           PostsSpecification.builder()
             .withId(id)
-            .notDeleted()
-            .conditionally(currentUser == null, PostsSpecification::publicOnly, spec ->
-              spec.publicOrOwnedBy(currentUser.getId())
+            .<PostsSpecification>conditionally(
+              currentUser == null,
+              spec -> spec.publicOnly().notDeleted(),
+              spec -> spec.publicOrOwnedBy(currentUser.getId())
             )
             .build()
         )

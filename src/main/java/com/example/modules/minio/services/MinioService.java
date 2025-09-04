@@ -5,6 +5,8 @@ import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import java.io.IOException;
@@ -110,17 +112,43 @@ public class MinioService {
     );
   }
 
-  private String sanitizeFileName(String fileName) {
+  /**
+   * Checks if a file exists in the configured MinIO bucket.
+   *
+   * @param fileName the name of the file to check for existence
+   * @return {@code true} if the file exists, {@code false} if it does not exist or an error response is received
+   * @throws RuntimeException if an unexpected exception occurs during the check
+   */
+  public boolean checkFileExists(String fileName) {
+    try {
+      this.minioClient.statObject(StatObjectArgs.builder().bucket(bucket).object(fileName).build());
+      return true;
+    } catch (ErrorResponseException e) {
+      log.error(e.getMessage(), e);
+      return false;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Sanitizes a file name by removing diacritical marks, replacing whitespace with underscores,
+   * and removing any characters that are not letters, digits, underscores, hyphens, or periods.
+   * If the input is null, empty, or results in an empty string after sanitization,
+   * returns {@code "untitled"}.
+   *
+   * @param fileName the original file name to sanitize
+   * @return a sanitized file name safe for use in file systems or URLs
+   */
+  public String sanitizeFileName(String fileName) {
     if (fileName == null || fileName.trim().isEmpty()) {
       return "untitled";
     }
 
-    String withoutDiacritics = Normalizer.normalize(fileName, Normalizer.Form.NFD).replaceAll(
-      "\\p{InCombiningDiacriticalMarks}+",
-      ""
-    );
-    String withoutSpaces = withoutDiacritics.replaceAll("\\s+", "_");
-    String sanitized = withoutSpaces.replaceAll("[^a-zA-Z0-9_\\-.]+", withoutSpaces);
+    String sanitized = Normalizer.normalize(fileName, Normalizer.Form.NFD)
+      .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+      .replaceAll("\\s+", "_")
+      .replaceAll("[^a-zA-Z0-9_\\-.]+", "");
 
     if (sanitized.isEmpty()) {
       return "untitled";

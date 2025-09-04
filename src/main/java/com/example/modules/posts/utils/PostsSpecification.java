@@ -15,7 +15,10 @@ public final class PostsSpecification extends SpecificationBuilder<Post> {
   public PostsSpecification containsTitle(String title) {
     if (title != null && !title.trim().isEmpty()) {
       specifications.add((root, query, criteriaBuilder) ->
-        criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase())
+        criteriaBuilder.like(
+          criteriaBuilder.lower(root.get("title")),
+          "%" + title.toLowerCase() + "%"
+        )
       );
     }
     return this;
