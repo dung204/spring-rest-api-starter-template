@@ -15,13 +15,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-  @Value("${spring.data.redis.host}")
+  @Value("${spring.data.redis.host:localhost}")
   private String host;
 
-  @Value("${spring.data.redis.port}")
+  @Value("${spring.data.redis.port:6379}")
   private int port;
 
-  @Value("${spring.data.redis.password}")
+  @Value("${spring.data.redis.password:#{null}}")
   private String password;
 
   private final ObjectMapper objectMapper;
@@ -29,7 +29,9 @@ public class RedisConfig {
   @Bean
   JedisConnectionFactory jedisConnectionFactory() {
     final RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-    config.setPassword(password);
+
+    if (password != null) config.setPassword(password);
+
     return new JedisConnectionFactory(config);
   }
 

@@ -25,7 +25,7 @@ public class MinioConfig {
   @Value("${minio.secret_key:minioadmin}")
   private String secretKey;
 
-  @Value("${minio.bucket}")
+  @Value("${minio.bucket:spring-rest-api-bucket}")
   private String bucket;
 
   @Bean
