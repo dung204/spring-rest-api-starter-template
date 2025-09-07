@@ -84,7 +84,7 @@ public class PostsServiceIntegrationTest extends BaseIntegrationTest {
   @Test
   void findAllPublicPosts_WhenTitleDoesNotMatchAnyPost_ShouldReturnEmpty() {
     PostsSearchDTO searchDTO = new PostsSearchDTO();
-    searchDTO.setName("Nonexistent");
+    searchDTO.setTitle("Nonexistent");
 
     Page<PostResponseDTO> result = postsService.findAllPublicPosts(searchDTO);
     assertEquals(0, result.getTotalElements());
@@ -93,7 +93,7 @@ public class PostsServiceIntegrationTest extends BaseIntegrationTest {
   @Test
   void findAllPublicPosts_WhenTitleMatchesAnyPublicPosts_ShouldReturnPosts() {
     PostsSearchDTO searchDTO = new PostsSearchDTO();
-    searchDTO.setName("spring bo");
+    searchDTO.setTitle("spring bo");
 
     Page<PostResponseDTO> result = postsService.findAllPublicPosts(searchDTO);
     assertEquals(1, result.getTotalElements());

@@ -63,6 +63,29 @@ public class PaginatedQueryDTO {
     ) String
   > order = Collections.emptyList();
 
+  public List<String> getOrder() {
+    try {
+      Class<?> currentClass = this.getClass();
+      Field orderField = currentClass.getField("order");
+      orderField.setAccessible(true);
+      List<String> orderValue = (List<String>) orderField.get(this);
+      orderField.setAccessible(false);
+      return orderValue;
+    } catch (Exception e) {
+      return Collections.emptyList();
+    }
+  }
+
+  public void setOrder(List<String> order) {
+    try {
+      Class<?> currentClass = this.getClass();
+      Field orderField = currentClass.getField("order");
+      orderField.setAccessible(true);
+      orderField.set(this, order);
+      orderField.setAccessible(false);
+    } catch (Exception e) {}
+  }
+
   /**
    * Extracts all non-null field values from this object and its superclasses to create a filters map.
    * This method uses reflection to traverse the class hierarchy and collect field values that can be

@@ -28,7 +28,7 @@ public class PostsService {
     return postsRepository
       .findAll(
         PostsSpecification.builder()
-          .containsTitle(postsSearchDTO.getName())
+          .containsTitle(postsSearchDTO.getTitle())
           .ownedBy(postsSearchDTO.getUser())
           .publicOnly()
           .notDeleted()

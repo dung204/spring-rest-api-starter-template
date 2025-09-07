@@ -105,9 +105,9 @@ public class PostsControllerTest extends BaseControllerTest {
     PostsSearchDTO postsSearchDTO = new PostsSearchDTO();
     postsSearchDTO.setPageSize(50);
     postsSearchDTO.setOrder(
-      List.of("createdTimestamp:desc", "updatedTimestamp:asc", "deletedTimestamp:desc", "name:asc")
+      List.of("createdTimestamp:desc", "updatedTimestamp:asc", "deletedTimestamp:desc", "title:asc")
     );
-    postsSearchDTO.setName("post title");
+    postsSearchDTO.setTitle("post title");
     postsSearchDTO.setUser("user id");
 
     Page<PostResponseDTO> mockPage = new PageImpl<>(
@@ -119,7 +119,7 @@ public class PostsControllerTest extends BaseControllerTest {
           Order.desc("createdTimestamp"),
           Order.asc("updatedTimestamp"),
           Order.desc("deletedTimestamp"),
-          Order.asc("name")
+          Order.asc("title")
         )
       ),
       1
@@ -158,10 +158,10 @@ public class PostsControllerTest extends BaseControllerTest {
       .andExpect(jsonPath("$.metadata.order[1].direction").value("asc"))
       .andExpect(jsonPath("$.metadata.order[2].field").value("deletedTimestamp"))
       .andExpect(jsonPath("$.metadata.order[2].direction").value("desc"))
-      .andExpect(jsonPath("$.metadata.order[3].field").value("name"))
+      .andExpect(jsonPath("$.metadata.order[3].field").value("title"))
       .andExpect(jsonPath("$.metadata.order[3].direction").value("asc"))
       .andExpect(jsonPath("$.metadata.filters").isMap())
-      .andExpect(jsonPath("$.metadata.filters.name").value(postsSearchDTO.getName()))
+      .andExpect(jsonPath("$.metadata.filters.title").value(postsSearchDTO.getTitle()))
       .andExpect(jsonPath("$.metadata.filters.user").value(postsSearchDTO.getUser()));
   }
 
@@ -713,7 +713,7 @@ public class PostsControllerTest extends BaseControllerTest {
       "order",
       postsSearchDTO.getOrder()
     );
-    if (postsSearchDTO.getName() != null) params.add("name", postsSearchDTO.getName());
+    if (postsSearchDTO.getTitle() != null) params.add("title", postsSearchDTO.getTitle());
     if (postsSearchDTO.getUser() != null) params.add("user", postsSearchDTO.getUser());
 
     return params;

@@ -1,9 +1,5 @@
 # Database configuration
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/spring_rest_api_db
-    username: postgres
-    password: anhdung
   data:
     redis:
       host: localhost

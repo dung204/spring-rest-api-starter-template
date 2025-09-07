@@ -13,16 +13,16 @@ import lombok.EqualsAndHashCode;
 public class PostsSearchDTO extends PaginatedQueryDTO {
 
   @Parameter(
-    description = "The sorting for the query. The syntax is `{field}:{order}`. Allowed fields are: `createdTimestamp`, `updatedTimestamp`, `deletedTimestamp`, `name`."
+    description = "The sorting for the query. The syntax is `{field}:{order}`. Allowed fields are: `createdTimestamp`, `updatedTimestamp`, `deletedTimestamp`, `title`."
   )
   private List<
     @OrderParam(
-      allowedFields = { "createdTimestamp", "updatedTimestamp", "deletedTimestamp", "name" }
+      allowedFields = { "createdTimestamp", "updatedTimestamp", "deletedTimestamp", "title" }
     ) String
   > order = Collections.emptyList();
 
-  @Parameter(description = "Every posts whose names contain this name will be returned")
-  private String name;
+  @Parameter(description = "Every posts whose title contain this title will be returned")
+  private String title;
 
   @Parameter(description = "Every posts whose user ID equals to this will be returned")
   private String user;

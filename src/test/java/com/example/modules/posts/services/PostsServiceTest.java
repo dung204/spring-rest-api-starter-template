@@ -48,7 +48,7 @@ public class PostsServiceTest extends BaseServiceTest {
     PostsSearchDTO searchDTO = mock(PostsSearchDTO.class);
     PageRequest pageRequest = mock(PageRequest.class);
 
-    when(searchDTO.getName()).thenReturn(null);
+    when(searchDTO.getTitle()).thenReturn(null);
     when(searchDTO.getUser()).thenReturn(null);
     when(searchDTO.toPageRequest()).thenReturn(pageRequest);
 
@@ -70,7 +70,7 @@ public class PostsServiceTest extends BaseServiceTest {
     PostsSearchDTO searchDTO = mock(PostsSearchDTO.class);
     PageRequest pageRequest = mock(PageRequest.class);
 
-    when(searchDTO.getName()).thenReturn("no post with this name");
+    when(searchDTO.getTitle()).thenReturn("no post with this name");
     when(searchDTO.getUser()).thenReturn("no post with this user");
     when(searchDTO.toPageRequest()).thenReturn(pageRequest);
 

@@ -12,6 +12,7 @@ import com.example.modules.auth.enums.Role;
 import com.example.modules.minio.services.MinioService;
 import com.example.modules.users.dtos.UserProfileDTO;
 import com.example.modules.users.entities.User;
+import io.minio.errors.MinioException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -74,7 +75,7 @@ public class UserMapperTest extends BaseServiceTest {
   void toUserProfileDTO_ShouldReturnNullAvatar_WhenMinioServiceThrowsException() throws Exception {
     String avatarFileName = "avatar.png";
     when(minioService.generatePresignedUrl(avatarFileName)).thenThrow(
-      new RuntimeException("Minio error")
+      new MinioException("Minio error")
     );
 
     User user = User.builder()
