@@ -24,7 +24,6 @@ public class AppControllerTests extends BaseControllerTest {
   void checkHealth_shouldReturnOkResponse() throws Exception {
     mockMvc
       .perform(get(API_PREFIX + "/health"))
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.message").value("OK"));

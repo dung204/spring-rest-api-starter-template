@@ -44,7 +44,6 @@ public class MeControllerTest extends BaseControllerTest {
     throws Exception {
     mockMvc
       .perform(get(ME_PREFIX + "/profile").contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isUnauthorized());
   }
 
@@ -63,7 +62,6 @@ public class MeControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .header("Authorization", "Bearer " + mockAccessToken)
       )
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -87,7 +85,6 @@ public class MeControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(updateProfileDTO))
       )
-      .andDo(print())
       .andExpect(status().isUnauthorized());
   }
 
@@ -115,7 +112,6 @@ public class MeControllerTest extends BaseControllerTest {
           .header("Authorization", "Bearer " + mockAccessToken)
           .content(objectMapper.writeValueAsString(updateProfileDTO))
       )
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -144,7 +140,6 @@ public class MeControllerTest extends BaseControllerTest {
           .header("Authorization", "Bearer " + mockAccessToken)
           .content(objectMapper.writeValueAsString(invalidUpdateProfileDTO))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest());
   }
 
@@ -166,7 +161,6 @@ public class MeControllerTest extends BaseControllerTest {
             return request;
           })
       )
-      .andDo(print())
       .andExpect(status().isUnauthorized());
   }
 
@@ -197,7 +191,6 @@ public class MeControllerTest extends BaseControllerTest {
             return request;
           })
       )
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -223,7 +216,6 @@ public class MeControllerTest extends BaseControllerTest {
             return request;
           })
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -252,7 +244,6 @@ public class MeControllerTest extends BaseControllerTest {
             return request;
           })
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -283,7 +274,6 @@ public class MeControllerTest extends BaseControllerTest {
             return request;
           })
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());

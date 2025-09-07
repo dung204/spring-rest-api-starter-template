@@ -12,6 +12,7 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 @ActiveProfiles("test")
+@Tag("integration")
 public class BaseIntegrationTest {
 
   @Container

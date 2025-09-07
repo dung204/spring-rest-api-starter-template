@@ -5,10 +5,12 @@ import com.example.modules.minio.dtos.MinioFileResponse;
 import com.example.modules.users.dtos.UserProfileDTO;
 import com.example.modules.users.entities.User;
 import java.time.Instant;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@Tag("unit")
 public class BaseServiceTest {
 
   protected Account getMockAccount() {

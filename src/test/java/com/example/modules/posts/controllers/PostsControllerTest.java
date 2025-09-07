@@ -55,7 +55,6 @@ public class PostsControllerTest extends BaseControllerTest {
     // When & Then
     mockMvc
       .perform(get(POSTS_PREFIX + "/").contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -83,7 +82,6 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(get(POSTS_PREFIX + "/").contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -239,7 +237,6 @@ public class PostsControllerTest extends BaseControllerTest {
     // When & Then
     mockMvc
       .perform(get(POSTS_PREFIX + "/" + postId).contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -258,7 +255,6 @@ public class PostsControllerTest extends BaseControllerTest {
     // When & Then
     mockMvc
       .perform(get(POSTS_PREFIX + "/" + postId).contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isNotFound())
       .andExpect(jsonPath("$.status").value(404))
       .andExpect(jsonPath("$.message").isString());
@@ -268,7 +264,6 @@ public class PostsControllerTest extends BaseControllerTest {
   void createPost_WhenUserIsNotLoggedIn_ShouldReturnUnauthorized() throws Exception {
     mockMvc
       .perform(post(POSTS_PREFIX + "/").contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isUnauthorized())
       .andExpect(jsonPath("$.status").value(401))
       .andExpect(jsonPath("$.message").isString());
@@ -302,7 +297,6 @@ public class PostsControllerTest extends BaseControllerTest {
           .content(objectMapper.writeValueAsString(createPostDTO))
           .header("Authorization", "Bearer " + mockAccessToken)
       )
-      .andDo(print())
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.status").value(201))
       .andExpect(jsonPath("$.message").isString())
@@ -421,7 +415,6 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(patch(POSTS_PREFIX + "/" + postId).contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isUnauthorized())
       .andExpect(jsonPath("$.status").value(401))
       .andExpect(jsonPath("$.message").isString());
@@ -448,7 +441,6 @@ public class PostsControllerTest extends BaseControllerTest {
           .content(objectMapper.writeValueAsString(updatePostDTO))
           .header("Authorization", "Bearer " + mockAccessToken)
       )
-      .andDo(print())
       .andExpect(status().isNotFound())
       .andExpect(jsonPath("$.status").value(404))
       .andExpect(jsonPath("$.message").isString());
@@ -485,7 +477,6 @@ public class PostsControllerTest extends BaseControllerTest {
           .content(objectMapper.writeValueAsString(updatePostDTO))
           .header("Authorization", "Bearer " + mockAccessToken)
       )
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -522,7 +513,6 @@ public class PostsControllerTest extends BaseControllerTest {
           .content("{}")
           .header("Authorization", "Bearer " + mockAccessToken)
       )
-      .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())

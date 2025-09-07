@@ -23,12 +23,14 @@ import io.jsonwebtoken.Jws;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @Import({ SecurityConfig.class, ObjectMapperConfig.class })
+@Tag("unit")
 public abstract class BaseControllerTest {
 
   @Autowired

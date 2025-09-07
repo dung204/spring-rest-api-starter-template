@@ -56,7 +56,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(loginRequest))
       )
-      .andDo(print())
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.status").value(201))
       .andExpect(jsonPath("$.message").isString())
@@ -90,7 +89,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(loginRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -113,7 +111,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(loginRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -134,7 +131,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(loginRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -144,7 +140,6 @@ public class AuthControllerTest extends BaseControllerTest {
   void login_ShouldReturnBadRequest_WhenRequestBodyIsEmpty() throws Exception {
     mockMvc
       .perform(post(AUTH_PREFIX + "/login").contentType(MediaType.APPLICATION_JSON).content("{}"))
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -165,7 +160,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(registerRequest))
       )
-      .andDo(print())
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.status").value(201))
       .andExpect(jsonPath("$.message").value("Registration successful"))
@@ -195,7 +189,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(registerRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -214,7 +207,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(registerRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -233,7 +225,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(registerRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -252,7 +243,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(registerRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -264,7 +254,6 @@ public class AuthControllerTest extends BaseControllerTest {
       .perform(
         post(AUTH_PREFIX + "/register").contentType(MediaType.APPLICATION_JSON).content("{}")
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -284,7 +273,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(refreshTokenRequest))
       )
-      .andDo(print())
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.status").value(201))
       .andExpect(jsonPath("$.message").value("Refresh token successfully"))
@@ -313,7 +301,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(refreshTokenRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -331,7 +318,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(refreshTokenRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -341,7 +327,6 @@ public class AuthControllerTest extends BaseControllerTest {
   void refreshToken_WhenRequestBodyIsEmpty_ShouldReturnBadRequest() throws Exception {
     mockMvc
       .perform(post(AUTH_PREFIX + "/refresh").contentType(MediaType.APPLICATION_JSON).content("{}"))
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -351,7 +336,6 @@ public class AuthControllerTest extends BaseControllerTest {
   void logout_WhenUserIsNotLoggedIn_ShouldReturnUnauthorizedResponse() throws Exception {
     mockMvc
       .perform(delete(AUTH_PREFIX + "/logout").contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
       .andExpect(status().isUnauthorized());
   }
 
@@ -366,7 +350,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .header("Authorization", "Bearer " + mockAccessToken)
       )
-      .andDo(print())
       .andExpect(status().isNoContent());
   }
 
@@ -383,7 +366,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(changePasswordRequest))
       )
-      .andDo(print())
       .andExpect(status().isUnauthorized());
   }
 
@@ -408,7 +390,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .header("Authorization", "Bearer " + mockAccessToken)
           .content(objectMapper.writeValueAsString(changePasswordRequest))
       )
-      .andDo(print())
       .andExpect(status().isNoContent());
   }
 
@@ -428,7 +409,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .header("Authorization", "Bearer " + mockAccessToken)
           .content(objectMapper.writeValueAsString(changePasswordRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -452,7 +432,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .header("Authorization", "Bearer " + mockAccessToken)
           .content(objectMapper.writeValueAsString(changePasswordRequest))
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -470,7 +449,6 @@ public class AuthControllerTest extends BaseControllerTest {
           .header("Authorization", "Bearer " + mockAccessToken)
           .content("{}")
       )
-      .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
