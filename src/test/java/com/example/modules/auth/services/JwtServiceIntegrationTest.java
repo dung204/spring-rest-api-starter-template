@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import com.example.base.BaseIntegrationTest;
+import com.example.base.BaseServiceIntegrationTest;
 import com.example.modules.auth.exceptions.InvalidCredentialsException;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.entities.User;
@@ -17,7 +17,7 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class JwtServiceIntegrationTest extends BaseIntegrationTest {
+public class JwtServiceIntegrationTest extends BaseServiceIntegrationTest {
 
   @Autowired
   private JwtService jwtService;

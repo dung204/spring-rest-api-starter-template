@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.example.base.BaseIntegrationTest;
+import com.example.base.BaseServiceIntegrationTest;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class AuthServiceIntegrationTest extends BaseIntegrationTest {
+public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
 
   @Autowired
   private AuthService authService;

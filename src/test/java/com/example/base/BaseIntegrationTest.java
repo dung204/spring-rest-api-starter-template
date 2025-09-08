@@ -11,7 +11,7 @@ import com.redis.testcontainers.RedisContainer;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,34 +19,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@Transactional
 @ActiveProfiles("test")
 @Tag("integration")
-@DirtiesContext
 public class BaseIntegrationTest {
 
-  @Container
+  @SuppressWarnings("resource")
   @ServiceConnection
-  protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:16-alpine"
-  );
+  protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
+    .withUsername("postgres")
+    .withPassword("postgres")
+    .withInitScript(null);
 
-  @Container
   protected static RedisContainer redis = new RedisContainer("redis:7.0-alpine");
 
-  @Container
   protected static MinIOContainer minio = new MinIOContainer("minio/minio:latest");
 
   @DynamicPropertySource
@@ -60,6 +54,13 @@ public class BaseIntegrationTest {
     registry.add("spring.data.redis.port", redis::getRedisPort);
   }
 
+  @BeforeAll
+  static void startTestContainers() {
+    postgres.start();
+    redis.start();
+    minio.start();
+  }
+
   @Autowired
   protected AccountsRepository accountsRepository;
 
@@ -68,40 +69,6 @@ public class BaseIntegrationTest {
 
   @Autowired
   protected PasswordEncoder passwordEncoder;
-
-  @BeforeEach
-  protected void setup() {
-    Account account = Account.builder()
-      .email("email@example.com")
-      .password(passwordEncoder.encode("password@123456"))
-      .build();
-    User user = User.builder().account(account).build();
-
-    accountsRepository.save(account);
-    usersRepository.save(user);
-  }
-
-  @Test
-  final void postgresConnectionEstablished() {
-    assertTrue(postgres.isCreated());
-  }
-
-  @Test
-  final void redisConnectionEstablished() {
-    assertTrue(redis.isCreated());
-
-    String redisURI = redis.getRedisURI();
-    RedisClient client = RedisClient.create(redisURI);
-    try (StatefulRedisConnection<String, String> connection = client.connect()) {
-      RedisCommands<String, String> commands = connection.sync();
-      assertEquals("PONG", commands.ping());
-    }
-  }
-
-  @Test
-  final void minioConnectionEstablished() {
-    assertTrue(minio.isCreated());
-  }
 
   protected Account getAccount() {
     return accountsRepository.findAll().get(0);

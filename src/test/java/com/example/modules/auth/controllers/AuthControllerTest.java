@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -117,7 +116,7 @@ public class AuthControllerTest extends BaseControllerTest {
   }
 
   @Test
-  void login_ShouldReturnBadRequest_WhenPasswordIsEmpty() throws Exception {
+  void login_WhenPasswordIsEmpty_ShouldReturnBadRequest() throws Exception {
     LoginRequestDTO loginRequest = LoginRequestDTO.builder()
       .email("test@example.com")
       .password("")
@@ -137,7 +136,7 @@ public class AuthControllerTest extends BaseControllerTest {
   }
 
   @Test
-  void login_ShouldReturnBadRequest_WhenRequestBodyIsEmpty() throws Exception {
+  void login_WhenRequestBodyIsEmpty_ShouldReturnBadRequest() throws Exception {
     mockMvc
       .perform(post(AUTH_PREFIX + "/login").contentType(MediaType.APPLICATION_JSON).content("{}"))
       .andExpect(status().isBadRequest())

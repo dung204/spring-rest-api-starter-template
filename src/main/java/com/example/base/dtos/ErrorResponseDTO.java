@@ -20,4 +20,8 @@ public class ErrorResponseDTO extends ResponseDTO {
   private ErrorResponseDTO(int status, String message) {
     super(validateErrorStatus(status), message);
   }
+
+  public ErrorResponseDTO() {
+    super(400, "");
+  }
 }

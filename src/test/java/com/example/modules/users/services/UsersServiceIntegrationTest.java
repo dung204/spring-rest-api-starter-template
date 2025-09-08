@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import com.example.base.BaseIntegrationTest;
+import com.example.base.BaseServiceIntegrationTest;
 import com.example.modules.users.dtos.UpdateProfileDTO;
 import com.example.modules.users.dtos.UserProfileDTO;
 import com.example.modules.users.entities.User;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-public class UsersServiceIntegrationTest extends BaseIntegrationTest {
+public class UsersServiceIntegrationTest extends BaseServiceIntegrationTest {
 
   @Autowired
   private UsersService usersService;

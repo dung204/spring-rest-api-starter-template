@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.example.base.BaseIntegrationTest;
+import com.example.base.BaseServiceIntegrationTest;
 import com.example.modules.minio.dtos.MinioFileResponse;
 import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-public class MinioServiceIntegrationTest extends BaseIntegrationTest {
+public class MinioServiceIntegrationTest extends BaseServiceIntegrationTest {
 
   @Autowired
   private MinioService minioService;

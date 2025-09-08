@@ -2,7 +2,6 @@ package com.example.modules.posts.entities;
 
 import com.example.base.entities.BaseEntity;
 import com.example.modules.users.entities.User;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -32,7 +31,7 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private String content;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 

@@ -2,8 +2,9 @@ package com.example.base.dtos;
 
 import com.example.base.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -15,8 +16,9 @@ import lombok.experimental.SuperBuilder;
  * using MapStruct works.
  */
 @SuperBuilder
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EntityDTO {
 
   @Schema(description = "The UUID of the entity", example = SwaggerExamples.UUID)

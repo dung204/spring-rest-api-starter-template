@@ -2,7 +2,9 @@ package com.example.base.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
@@ -20,7 +22,8 @@ import lombok.NonNull;
  *
  * @see ResponseDTO
  */
-@Getter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuccessResponseDTO<T> extends ResponseDTO {
 
@@ -30,5 +33,9 @@ public class SuccessResponseDTO<T> extends ResponseDTO {
   private SuccessResponseDTO(Integer status, @NonNull String message, T data) {
     super(status == null ? 200 : validateSuccessStatus(status), message);
     this.data = data;
+  }
+
+  public SuccessResponseDTO() {
+    super(200, "");
   }
 }

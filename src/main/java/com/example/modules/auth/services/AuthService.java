@@ -75,7 +75,10 @@ public class AuthService {
       account.setPassword(passwordEncoder.encode(password));
       account.setDeletedTimestamp(null);
       final Account savedAccount = accountsRepository.save(account);
-      savedUser = usersRepository.save(User.builder().account(savedAccount).build());
+      final User user = usersRepository
+        .findByAccount(account)
+        .orElse(User.builder().account(savedAccount).build());
+      savedUser = usersRepository.save(user);
     }
 
     return getTokenResponse(savedUser);

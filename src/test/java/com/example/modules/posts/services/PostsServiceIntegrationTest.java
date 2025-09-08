@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.example.base.BaseIntegrationTest;
+import com.example.base.BaseServiceIntegrationTest;
 import com.example.modules.posts.dtos.CreatePostDTO;
 import com.example.modules.posts.dtos.MePostsSearchDTO;
 import com.example.modules.posts.dtos.PostResponseDTO;
@@ -19,13 +19,14 @@ import com.example.modules.posts.repositories.PostsRepository;
 import com.example.modules.users.entities.User;
 import java.time.Instant;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
-public class PostsServiceIntegrationTest extends BaseIntegrationTest {
+public class PostsServiceIntegrationTest extends BaseServiceIntegrationTest {
 
   @Autowired
   private PostsService postsService;
@@ -41,8 +42,6 @@ public class PostsServiceIntegrationTest extends BaseIntegrationTest {
   @Override
   protected void setup() {
     super.setup();
-    postsRepository.deleteAll();
-
     User user = getUser();
 
     publicPost = Post.builder()
@@ -68,6 +67,14 @@ public class PostsServiceIntegrationTest extends BaseIntegrationTest {
       .build();
 
     postsRepository.saveAll(List.of(publicPost, privatePost, deletedPublicPost));
+  }
+
+  @AfterEach
+  @Override
+  protected void cleanup() {
+    postsRepository.deleteAll();
+    postsRepository.flush();
+    super.cleanup();
   }
 
   @Test

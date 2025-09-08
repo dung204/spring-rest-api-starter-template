@@ -3,6 +3,7 @@ package com.example.base.dtos;
 import com.example.base.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
+import lombok.Data;
 import lombok.Getter;
 
 /**
@@ -16,7 +17,7 @@ import lombok.Getter;
  * are used for success (2XX-3XX) and error (4XX-5XX) responses.</p>
  *
  */
-@Getter
+@Data
 public abstract class ResponseDTO {
 
   @Schema(example = SwaggerExamples.STATUS_CODE, description = "HTTP status code")

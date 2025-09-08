@@ -4,13 +4,17 @@ import com.example.base.dtos.EntityDTO;
 import com.example.base.utils.SwaggerExamples;
 import com.example.modules.minio.dtos.MinioFileResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserProfileDTO extends EntityDTO {
 
   @Schema(description = "The email of the user", example = SwaggerExamples.EMAIL)

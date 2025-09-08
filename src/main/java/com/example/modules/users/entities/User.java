@@ -2,12 +2,15 @@ package com.example.modules.users.entities;
 
 import com.example.base.entities.BaseEntity;
 import com.example.modules.auth.entities.Account;
+import com.example.modules.posts.entities.Post;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,4 +38,7 @@ public class User extends BaseEntity {
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "account_id", nullable = false)
   private Account account;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<Post> posts;
 }

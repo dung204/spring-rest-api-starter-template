@@ -7,8 +7,8 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
@@ -21,7 +21,8 @@ import org.springframework.data.domain.Sort;
  *
  * @see ResponseDTO
  */
-@Getter
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class PaginatedSuccessResponseDTO<T> extends ResponseDTO {
 
   private final List<T> data;
