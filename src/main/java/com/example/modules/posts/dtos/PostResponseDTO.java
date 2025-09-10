@@ -3,13 +3,17 @@ package com.example.modules.posts.dtos;
 import com.example.base.dtos.EntityDTO;
 import com.example.modules.users.dtos.UserProfileDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostResponseDTO extends EntityDTO {
 
   @Schema(description = "The title of the post", example = "Title")

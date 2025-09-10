@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
@@ -25,8 +25,8 @@ import org.springframework.data.domain.Sort;
 @EqualsAndHashCode(callSuper = true)
 public class PaginatedSuccessResponseDTO<T> extends ResponseDTO {
 
-  private final List<T> data;
-  private final Metadata metadata;
+  private List<T> data;
+  private Metadata metadata;
 
   @Builder
   private PaginatedSuccessResponseDTO(
@@ -40,7 +40,14 @@ public class PaginatedSuccessResponseDTO<T> extends ResponseDTO {
     this.metadata = new Metadata(page, filters);
   }
 
+  public PaginatedSuccessResponseDTO() {
+    super(200, null);
+    this.data = null;
+    this.metadata = null;
+  }
+
   @Data
+  @NoArgsConstructor
   @AllArgsConstructor
   public static class Metadata {
 
@@ -78,14 +85,15 @@ public class PaginatedSuccessResponseDTO<T> extends ResponseDTO {
   }
 
   @Data
+  @NoArgsConstructor
   public static class Pagination {
 
-    private final int currentPage;
-    private final int pageSize;
-    private final long total;
-    private final int totalPages;
-    private final boolean hasNextPage;
-    private final boolean hasPreviousPage;
+    private int currentPage;
+    private int pageSize;
+    private long total;
+    private int totalPages;
+    private boolean hasNextPage;
+    private boolean hasPreviousPage;
 
     public Pagination(Page<?> page) {
       this.currentPage = page.getNumber() + 1;
@@ -99,9 +107,11 @@ public class PaginatedSuccessResponseDTO<T> extends ResponseDTO {
 
   @Data
   @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class Order {
 
-    private final String field;
-    private final String direction;
+    private String field;
+    private String direction;
   }
 }

@@ -5,7 +5,6 @@ import com.example.modules.users.entities.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,6 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private String title;
 
-  @Lob
   @Column(nullable = false)
   private String content;
 
