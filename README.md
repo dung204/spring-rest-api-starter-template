@@ -1,13 +1,17 @@
 # Spring REST API Starter Template
 
-> 🚧 Working in Progress ...
+A production-ready Spring Boot template for building modern RESTful APIs.
+It provides a clean project structure, recommended libraries, and best practices for development, testing, and deployment.
+This template is designed to help you quickly start new backend projects and streamline your workflow.
 
 ## 🚀 Key features
 
-- **Authentication and Authorization** with Spring Security & JWT (JSON Web Token)
-- **File Storage** with MinIO
-- **Deployment** with Docker Compose
-- **Code formatting** with Prettier
+- 🔒 **Authentication and Authorization** with Spring Security & JWT (JSON Web Token)
+- 📂 **File Storage** with MinIO
+- 🚀 **Deployment** with Docker Compose
+- 🎨 **Code formatting** with Prettier
+- 🧪 **Testing** with JUnit, Mockito & Testcontainers
+- 🔄 **CI/CD workflows** with GitHub Actions (currently including testing workflow only)
 
 ## 🛠️ Prerequisites
 
@@ -66,6 +70,8 @@ mvn spring-boot:run
 
 ## 📦 Libraries (dependencies)
 
+Core libraries:
+
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [Spring Web](https://spring.io/guides/gs/serving-web-content/)
 - [Spring Security](https://spring.io/guides/gs/securing-web/): handling authentication and authorization
@@ -76,5 +82,35 @@ mvn spring-boot:run
 - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/)
 - [Jedis](https://github.com/redis/jedis): Redis Java client
 - [MinIO Java SDK](https://github.com/minio/minio-java)
+
+---
+
+Testing libraries:
+
+- [JUnit 5](https://junit.org/junit5/): unit testing framework
+- [Mockito](https://site.mockito.org/): mocking framework for unit tests
+- [Testcontainers](https://www.testcontainers.org/): providing throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container
+- [Spring Boot Test](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-testing): testing utilities for Spring Boot applications
+
+---
+
+Formatters & Linters & Misc. tools:
+
 - [Prettier](https://prettier.io/): code formatting (require Node.js)
 - [Husky](https://github.com/typicode/husky): managing Git hooks (require Node.js)
+- [lint-staged](https://github.com/okonet/lint-staged): run linters on pre-committed files (require Node.js)
+- [commitlint](https://commitlint.js.org/#/): lint commit messages (require Node.js)
+
+## 🧪 Testing
+
+- To run unit tests, use the following command:
+
+```bash
+mvn test -Dgroups=unit
+```
+
+- To run integration tests, use the following command:
+
+```bash
+mvn test -Dgroups=integration
+```
