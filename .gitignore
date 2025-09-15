@@ -57,3 +57,4 @@ bun.lock
 .env.local
 
 logs/*
+*.log
