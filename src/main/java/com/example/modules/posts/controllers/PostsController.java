@@ -48,7 +48,7 @@ public class PostsController {
     }
   )
   @Public
-  @GetMapping("/")
+  @GetMapping
   public PaginatedSuccessResponseDTO<PostResponseDTO> getAllPosts(
     @ParameterObject @Valid PostsSearchDTO postsSearchDTO
   ) {
@@ -88,7 +88,7 @@ public class PostsController {
     }
   )
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
-  @PostMapping("/")
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<PostResponseDTO> createPost(
     @RequestBody @Valid CreatePostDTO createPostDTO,

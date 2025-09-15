@@ -4,7 +4,6 @@ import com.example.base.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import lombok.Data;
-import lombok.Getter;
 
 /**
  * Abstract base class for all response DTOs in the API.
