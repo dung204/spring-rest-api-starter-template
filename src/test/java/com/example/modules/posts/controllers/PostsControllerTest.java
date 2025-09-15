@@ -53,7 +53,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     // When & Then
     mockMvc
-      .perform(get(POSTS_PREFIX + "/").contentType(MediaType.APPLICATION_JSON))
+      .perform(get(POSTS_PREFIX).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -80,7 +80,7 @@ public class PostsControllerTest extends BaseControllerTest {
     when(postsService.findAllPublicPosts(any(PostsSearchDTO.class))).thenReturn(emptyPage);
 
     mockMvc
-      .perform(get(POSTS_PREFIX + "/").contentType(MediaType.APPLICATION_JSON))
+      .perform(get(POSTS_PREFIX).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value(200))
       .andExpect(jsonPath("$.message").isString())
@@ -129,7 +129,7 @@ public class PostsControllerTest extends BaseControllerTest {
     // When & Then
     mockMvc
       .perform(
-        get(POSTS_PREFIX + "/")
+        get(POSTS_PREFIX)
           .queryParams(toQueryParams(postsSearchDTO))
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -167,9 +167,7 @@ public class PostsControllerTest extends BaseControllerTest {
   @Test
   void getAllPosts_WhenPageIsSmallerThan1_ShouldReturnBadRequest() throws Exception {
     mockMvc
-      .perform(
-        get(POSTS_PREFIX + "/").queryParam("page", "-1").contentType(MediaType.APPLICATION_JSON)
-      )
+      .perform(get(POSTS_PREFIX).queryParam("page", "-1").contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -178,9 +176,7 @@ public class PostsControllerTest extends BaseControllerTest {
   @Test
   void getAllPosts_WhenPageIsNotANumber_ShouldReturnBadRequest() throws Exception {
     mockMvc
-      .perform(
-        get(POSTS_PREFIX + "/").queryParam("page", "aaa").contentType(MediaType.APPLICATION_JSON)
-      )
+      .perform(get(POSTS_PREFIX).queryParam("page", "aaa").contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
       .andExpect(jsonPath("$.message").isString());
@@ -190,7 +186,7 @@ public class PostsControllerTest extends BaseControllerTest {
   void getAllPosts_WhenPageSizeIsSmallerThan1_ShouldReturnBadRequest() throws Exception {
     mockMvc
       .perform(
-        get(POSTS_PREFIX + "/").queryParam("pageSize", "-1").contentType(MediaType.APPLICATION_JSON)
+        get(POSTS_PREFIX).queryParam("pageSize", "-1").contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
@@ -201,9 +197,7 @@ public class PostsControllerTest extends BaseControllerTest {
   void getAllPosts_WhenPageSizeIsNotANumber_ShouldReturnBadRequest() throws Exception {
     mockMvc
       .perform(
-        get(POSTS_PREFIX + "/")
-          .queryParam("pageSize", "aaa")
-          .contentType(MediaType.APPLICATION_JSON)
+        get(POSTS_PREFIX).queryParam("pageSize", "aaa").contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.status").value(400))
@@ -214,7 +208,7 @@ public class PostsControllerTest extends BaseControllerTest {
   void getAllPosts_WhenOrderIsInvalid_ShouldReturnBadRequest() throws Exception {
     mockMvc
       .perform(
-        get(POSTS_PREFIX + "/")
+        get(POSTS_PREFIX)
           .queryParam("order", "invalidField:desc")
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -262,7 +256,7 @@ public class PostsControllerTest extends BaseControllerTest {
   @Test
   void createPost_WhenUserIsNotLoggedIn_ShouldReturnUnauthorized() throws Exception {
     mockMvc
-      .perform(post(POSTS_PREFIX + "/").contentType(MediaType.APPLICATION_JSON))
+      .perform(post(POSTS_PREFIX).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isUnauthorized())
       .andExpect(jsonPath("$.status").value(401))
       .andExpect(jsonPath("$.message").isString());
@@ -291,7 +285,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(
-        post(POSTS_PREFIX + "/")
+        post(POSTS_PREFIX)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(createPostDTO))
           .header("Authorization", "Bearer " + mockAccessToken)
@@ -317,7 +311,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(
-        post(POSTS_PREFIX + "/")
+        post(POSTS_PREFIX)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(invalidDto))
           .header("Authorization", "Bearer " + mockAccessToken)
@@ -338,7 +332,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(
-        post(POSTS_PREFIX + "/")
+        post(POSTS_PREFIX)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(invalidDto))
           .header("Authorization", "Bearer " + mockAccessToken)
@@ -359,7 +353,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(
-        post(POSTS_PREFIX + "/")
+        post(POSTS_PREFIX)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(invalidDto))
           .header("Authorization", "Bearer " + mockAccessToken)
@@ -377,7 +371,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(
-        post(POSTS_PREFIX + "/")
+        post(POSTS_PREFIX)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(invalidDto))
           .header("Authorization", "Bearer " + mockAccessToken)
@@ -398,7 +392,7 @@ public class PostsControllerTest extends BaseControllerTest {
 
     mockMvc
       .perform(
-        post(POSTS_PREFIX + "/")
+        post(POSTS_PREFIX)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(invalidDto))
           .header("Authorization", "Bearer " + mockAccessToken)

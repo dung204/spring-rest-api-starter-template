@@ -62,7 +62,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
   @Test
   void getAllPosts_ShouldReturnOnlyPublicAndDoNotReturnDeletedOrPrivatePosts() throws Exception {
     ResponseEntity<PaginatedSuccessResponseDTO<PostResponseDTO>> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.GET,
       HttpEntity.EMPTY,
       new ParameterizedTypeReference<>() {}
@@ -104,7 +104,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
   void getAllPosts_WhenProvidedInRequest_ShouldHandleSearchParameters() throws Exception {
     User user = getUser();
 
-    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX + '/')
+    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX)
       .queryParam("title", "Spring")
       .queryParam("user", user.getId())
       .queryParam("pageSize", 50)
@@ -170,9 +170,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
 
   @Test
   void getAllPosts_WhenPageIsSmallerThan1_ShouldReturnBadRequest() throws Exception {
-    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX + '/')
-      .queryParam("page", 0)
-      .toUriString();
+    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX).queryParam("page", 0).toUriString();
 
     ResponseEntity<PaginatedSuccessResponseDTO<PostResponseDTO>> response = restTemplate.exchange(
       url,
@@ -189,7 +187,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
 
   @Test
   void getAllPosts_WhenPageIsNotANumber_ShouldReturnBadRequest() throws Exception {
-    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX + '/')
+    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX)
       .queryParam("page", "abc")
       .toUriString();
 
@@ -208,7 +206,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
 
   @Test
   void getAllPosts_WhenPageSizeIsSmallerThan1_ShouldReturnBadRequest() throws Exception {
-    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX + '/')
+    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX)
       .queryParam("pageSize", 0)
       .toUriString();
 
@@ -227,7 +225,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
 
   @Test
   void getAllPosts_WhenPageSizeIsNotANumber_ShouldReturnBadRequest() throws Exception {
-    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX + '/')
+    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX)
       .queryParam("pageSize", "abc")
       .toUriString();
 
@@ -246,7 +244,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
 
   @Test
   void getAllPosts_WhenOrderIsInvalid_ShouldReturnBadRequest() throws Exception {
-    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX + '/')
+    String url = UriComponentsBuilder.fromPath(POSTS_PREFIX)
       .queryParam("order", "invalidField:asc")
       .toUriString();
 
@@ -464,7 +462,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
       .build();
 
     ResponseEntity<ErrorResponseDTO> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(createPostDTO),
       new ParameterizedTypeReference<>() {}
@@ -490,7 +488,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
       .build();
 
     ResponseEntity<SuccessResponseDTO<PostResponseDTO>> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(createPostDTO, headers),
       new ParameterizedTypeReference<>() {}
@@ -522,7 +520,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
     CreatePostDTO invalidDto = CreatePostDTO.builder().content("content").build();
 
     ResponseEntity<ErrorResponseDTO> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(invalidDto, headers),
       new ParameterizedTypeReference<>() {}
@@ -548,7 +546,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
       .build();
 
     ResponseEntity<ErrorResponseDTO> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(invalidDto, headers),
       new ParameterizedTypeReference<>() {}
@@ -574,7 +572,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
       .build();
 
     ResponseEntity<ErrorResponseDTO> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(invalidDto, headers),
       new ParameterizedTypeReference<>() {}
@@ -597,7 +595,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
     CreatePostDTO invalidDto = CreatePostDTO.builder().title("title").build();
 
     ResponseEntity<ErrorResponseDTO> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(invalidDto, headers),
       new ParameterizedTypeReference<>() {}
@@ -623,7 +621,7 @@ public class PostsControllerIntegrationTest extends BaseControllerIntegrationTes
       .build();
 
     ResponseEntity<ErrorResponseDTO> response = restTemplate.exchange(
-      POSTS_PREFIX + "/",
+      POSTS_PREFIX,
       HttpMethod.POST,
       new HttpEntity<>(invalidDto, headers),
       new ParameterizedTypeReference<>() {}
