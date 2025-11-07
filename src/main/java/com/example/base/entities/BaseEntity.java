@@ -10,7 +10,9 @@ import java.time.Instant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -38,9 +40,17 @@ public class BaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   protected String id;
 
+  @Column(nullable = true)
+  @CreatedBy
+  protected String createdBy;
+
   @Column(nullable = false)
   @CreatedDate
   protected Instant createdTimestamp;
+
+  @Column(nullable = true)
+  @LastModifiedBy
+  protected String updatedBy;
 
   @Column(nullable = false)
   @LastModifiedDate

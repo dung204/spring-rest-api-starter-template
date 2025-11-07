@@ -24,7 +24,9 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -41,12 +43,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final JwtService jwtService;
-  private final UsersRepository usersRepository;
-  private final RequestMappingHandlerMapping handlerMapping;
-  private final ObjectMapper objectMapper;
+  JwtService jwtService;
+  UsersRepository usersRepository;
+  RequestMappingHandlerMapping handlerMapping;
+  ObjectMapper objectMapper;
 
   @Override
   protected void doFilterInternal(
@@ -86,9 +89,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throw new TokenInvalidatedException();
       }
 
-      User user = usersRepository
-        .findById(userId)
-        .orElseThrow(() -> new InvalidCredentialsException());
+      User user = usersRepository.findById(userId).orElseThrow(InvalidCredentialsException::new);
 
       final String currentRole = decodedToken.getPayload().get("role", String.class);
       final List<String> allowRoles = getAllowRolesOfCurrentRoute(request)
@@ -103,7 +104,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       securityContext.setAuthentication(
         new UsernamePasswordAuthenticationToken(
-          user.getAccount().getEmail(),
+          user,
           null,
           List.of(new SimpleGrantedAuthority(currentRole))
         )

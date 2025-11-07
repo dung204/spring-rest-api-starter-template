@@ -24,11 +24,17 @@ public class EntityDTO {
   @Schema(description = "The UUID of the entity", example = SwaggerExamples.UUID)
   protected String id;
 
+  @Schema(description = "The createdBy when the entity is created", example = SwaggerExamples.UUID)
+  protected String createdBy;
+
   @Schema(
     description = "The timestamp indicating when the entity is created",
     example = SwaggerExamples.TIMESTAMP
   )
   protected String createdTimestamp;
+
+  @Schema(description = "The updatedBy when the entity is updated", example = SwaggerExamples.UUID)
+  protected String updatedBy;
 
   @Schema(
     description = "The timestamp indicating when the entity is last modified",

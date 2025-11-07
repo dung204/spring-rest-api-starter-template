@@ -23,6 +23,12 @@ public abstract class UserMapper {
   @Mapping(source = "avatar", target = "avatar", qualifiedByName = "mapAvatar")
   public abstract UserProfileDTO toUserProfileDTO(User user);
 
+  @Named("toUserProfileDTOWithoutAvatar")
+  @Mapping(source = "account.email", target = "email")
+  @Mapping(source = "account.role", target = "role")
+  @Mapping(target = "avatar", ignore = true)
+  public abstract UserProfileDTO toUserProfileDTOWithoutAvatar(User user);
+
   @Named("mapAvatar")
   protected MinioFileResponse mapAvatar(String avatarFileName) {
     if (avatarFileName == null || avatarFileName.trim().isEmpty()) {
