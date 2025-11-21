@@ -1,0 +1,87 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "src/**"
+  pull_request:
+    branches: [master, main]
+    paths:
+      - "src/**"
+
+jobs:
+  unit-tests:
+    uses: ./.github/workflows/unit-tests.yml
+
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yml
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest, ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Copy docker-compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yaml,docker-compose.prod.yaml,nginx/conf.d/app.conf.template"
+          target: "~/spring-rest-api-stater-template"
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            mkdir -p ~/spring-rest-api-start-template
+            cd ~/spring-rest-api-start-template
+
+            echo "DB_PORT=${{ secrets.DB_PORT }}" > .env
+            echo "DB_DATABASE_NAME=${{ secrets.DB_DATABASE_NAME }}" >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "" >> .env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+            echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+            echo "" >> .env
+            echo "MINIO_ACCESS_KEY=${{ secrets.MINIO_ACCESS_KEY }}" >> .env
+            echo "MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY }}" >> .env
+            echo "MINIO_PORT=${{ secrets.MINIO_PORT }}" >> .env
+            echo "MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}" >> .env
+            echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
+            echo "" >> .env
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
+            echo "IMAGE_NAME=${{ secrets.IMAGE_NAME }}" >> .env
+            echo "APP_VERSION=${{ secrets.APP_VERSION }}" >> .env
+            echo "" >> .env
+            echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
+
+            echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+            docker compose -f docker-compose.prod.yaml pull
+
+            docker compose -f docker-compose.prod.yaml up -d
+
+            docker image prune -f

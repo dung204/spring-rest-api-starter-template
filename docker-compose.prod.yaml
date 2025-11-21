@@ -1,0 +1,41 @@
+services:
+  postgres:
+    ports: []
+
+  redis:
+    ports: []
+
+  minio:
+    ports: []
+
+  backend-app:
+    container_name: backend-app
+    image: ${DOCKER_USERNAME:?}/${IMAGE_NAME:?}:${APP_VERSION:-latest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - spring-rest-api-starter-template-network
+
+  nginx:
+    container_name: nginx
+    image: nginx:alpine3.22
+    depends_on:
+      - backend-app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+      - ./certs:/etc/nginx/certs:ro
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME:?}
+      - MINIO_PORT=${MINIO_PORT:-9000}
+      - MINIO_CONSOLE_PORT=${MINIO_CONSOLE_PORT:-9001}
+      - MINIO_BUCKET=${MINIO_BUCKET:-bucket}
+    networks:
+      - spring-rest-api-starter-template-network
