@@ -11,7 +11,7 @@ This template is designed to help you quickly start new backend projects and str
 - 🚀 **Deployment** with Docker Compose
 - 🎨 **Code formatting** with Prettier
 - 🧪 **Testing** with JUnit, Mockito & Testcontainers
-- 🔄 **CI/CD workflows** with GitHub Actions (currently including testing workflow only)
+- 🔄 **CI/CD workflows** with GitHub Actions (testing & deploying workflows)
 
 ## 🛠️ Prerequisites
 
@@ -22,11 +22,12 @@ You need to install all of these before continuing:
 - [Node.js](https://nodejs.org/en/download)
 - [Docker & Docker Compose](https://docs.docker.com/get-docker/)
 
-The following tools will be downloaded & started by Docker Compose. If not using Docker Compose, you will need to install them manually in your environment:
+The following tools will be downloaded & started by Docker Compose:
 
 - [MinIO](https://min.io/download)
 - [PostgreSQL](https://www.postgresql.org/download/)
 - [Redis](https://redis.io/download)
+- [nginx](https://nginx.org/)
 
 ## 🚀 Getting started
 
@@ -42,11 +43,7 @@ git clone https://github.com/dung204/spring-rest-api-starter-template.git
 cd spring-rest-api-starter-template
 ```
 
-3. Prepare the environment variables:
-
-3.1. If using Docker Compose, create a `.env` file in the root directory of the project. You can use the `.env.example` file as a template. Make sure to fill in the required environment variables. These variables is required for Docker Compose
-
-3.2. Create a configuration file, named `application-dev.yml`, place it at `src/resources/`. The content of this file should follow the example file (`application-dev-example.yml`)
+3. Create a `.env` file in the root directory of the project. You can use the `.env.example` file as a template. Make sure to fill in the required environment variables.
 
 4. Use `npm` to install `husky`, `commitlint`, `prettier` & `lint-staged`:
 

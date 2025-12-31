@@ -1,6 +1,5 @@
 package com.example.modules.auth.services;
 
-import com.example.modules.auth.exceptions.InvalidCredentialsException;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.entities.User;
 import io.jsonwebtoken.Claims;
@@ -74,14 +73,10 @@ public class JwtService {
   }
 
   public Jws<Claims> verifyAccessToken(String token) {
-    try {
-      return Jwts.parser()
-        .verifyWith(getSecretKeyFromString(ACCESS_SECRET))
-        .build()
-        .parseSignedClaims(token);
-    } catch (Exception e) {
-      throw new InvalidCredentialsException(e.getMessage());
-    }
+    return Jwts.parser()
+      .verifyWith(getSecretKeyFromString(ACCESS_SECRET))
+      .build()
+      .parseSignedClaims(token);
   }
 
   public Jws<Claims> verifyRefreshToken(String token) {

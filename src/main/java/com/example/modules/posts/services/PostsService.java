@@ -1,5 +1,8 @@
 package com.example.modules.posts.services;
 
+import static com.example.base.enums.ErrorCode.POST_NOT_FOUND;
+
+import com.example.base.exceptions.ResourceNotFoundException;
 import com.example.base.utils.ObjectUtils;
 import com.example.modules.posts.dtos.CreatePostDTO;
 import com.example.modules.posts.dtos.MePostsSearchDTO;
@@ -7,7 +10,6 @@ import com.example.modules.posts.dtos.PostResponseDTO;
 import com.example.modules.posts.dtos.PostsSearchDTO;
 import com.example.modules.posts.dtos.UpdatePostDTO;
 import com.example.modules.posts.entities.Post;
-import com.example.modules.posts.exceptions.PostNotFoundException;
 import com.example.modules.posts.repositories.PostsRepository;
 import com.example.modules.posts.utils.PostMapper;
 import com.example.modules.posts.utils.PostsSpecification;
@@ -67,7 +69,7 @@ public class PostsService {
             )
             .build()
         )
-        .orElseThrow(PostNotFoundException::new)
+        .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND))
     );
   }
 
@@ -89,7 +91,7 @@ public class PostsService {
       .findOne(
         PostsSpecification.builder().ownedBy(currentUser.getId()).notDeleted().withId(id).build()
       )
-      .orElseThrow(PostNotFoundException::new);
+      .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
 
     ObjectUtils.assign(post, updatePostDTO);
     return postMapper.toPostResponseDTO(postsRepository.save(post));
@@ -100,7 +102,7 @@ public class PostsService {
       .findOne(
         PostsSpecification.builder().ownedBy(currentUser.getId()).notDeleted().withId(id).build()
       )
-      .orElseThrow(PostNotFoundException::new);
+      .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
 
     post.setDeletedTimestamp(Instant.now());
     postsRepository.save(post);
@@ -111,7 +113,7 @@ public class PostsService {
       .findOne(
         PostsSpecification.builder().ownedBy(currentUser.getId()).deletedOnly().withId(id).build()
       )
-      .orElseThrow(PostNotFoundException::new);
+      .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
 
     post.setDeletedTimestamp(null);
     return postMapper.toPostResponseDTO(postsRepository.save(post));

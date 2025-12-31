@@ -2,6 +2,7 @@ package com.example.modules.auth.dtos;
 
 import com.example.base.utils.SwaggerExamples;
 import com.example.modules.users.dtos.UserProfileDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,10 +23,8 @@ public class AuthTokenDTO {
   @NonNull
   private String accessToken;
 
-  @Schema(
-    description = "Refresh token for authenticated user",
-    example = SwaggerExamples.REFRESH_TOKEN
-  )
+  @Schema(hidden = true)
+  @JsonIgnore
   @NonNull
   private String refreshToken;
 

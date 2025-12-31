@@ -1,22 +1,23 @@
 package com.example.modules.auth.services;
 
+import static com.example.base.enums.ErrorCode.EMAIL_USED;
+import static com.example.base.enums.ErrorCode.INVALID_CREDENTIALS;
+import static com.example.base.enums.ErrorCode.PASSWORD_NOT_MATCH;
+import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
+import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.example.base.BaseServiceIntegrationTest;
+import com.example.base.exceptions.BusinessException;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
 import com.example.modules.auth.entities.Account;
-import com.example.modules.auth.exceptions.EmailHasAlreadyBeenUsedException;
-import com.example.modules.auth.exceptions.InvalidCredentialsException;
-import com.example.modules.auth.exceptions.PasswordNotMatchException;
-import com.example.modules.auth.exceptions.TokenInvalidatedException;
 import com.example.modules.users.entities.User;
-import com.example.modules.users.exceptions.UserNotFoundException;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,10 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .password("password@123456")
       .build();
 
-    assertThrows(InvalidCredentialsException.class, () -> authService.login(loginRequest));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.login(loginRequest)
+    );
+    assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
   @Test
@@ -62,7 +66,10 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .password("invalidpassword")
       .build();
 
-    assertThrows(InvalidCredentialsException.class, () -> authService.login(loginRequest));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.login(loginRequest)
+    );
+    assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
   @Test
@@ -86,9 +93,11 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .password("newpassword")
       .build();
 
-    assertThrows(EmailHasAlreadyBeenUsedException.class, () ->
+    BusinessException ex = assertThrows(BusinessException.class, () ->
       authService.register(registerRequest)
     );
+
+    assertEquals(EMAIL_USED, ex.getErrorCode());
   }
 
   @Test
@@ -129,7 +138,10 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
     Thread.sleep(2000);
     authService.logout(user);
 
-    assertThrows(TokenInvalidatedException.class, () -> authService.refresh(refreshToken));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.refresh(refreshToken)
+    );
+    assertEquals(TOKEN_INVALIDATED, ex.getErrorCode());
   }
 
   @Test
@@ -139,7 +151,10 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
 
     usersRepository.deleteAll();
 
-    assertThrows(UserNotFoundException.class, () -> authService.refresh(refreshToken));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.refresh(refreshToken)
+    );
+    assertEquals(USER_NOT_FOUND, ex.getErrorCode());
   }
 
   @Test
@@ -185,7 +200,10 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .newPassword("newPassword")
       .build();
 
-    assertThrows(PasswordNotMatchException.class, () -> authService.changePassword(user, request));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.changePassword(user, request)
+    );
+    assertEquals(PASSWORD_NOT_MATCH, ex.getErrorCode());
   }
 
   @Test

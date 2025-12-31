@@ -1,12 +1,18 @@
 package com.example.base.handlers;
 
+import static com.example.base.enums.ErrorCode.INVALID_REQUEST;
+import static com.example.base.enums.ErrorCode.UNKNOWN_ERROR;
+
 import com.example.base.dtos.ErrorResponseDTO;
+import com.example.base.enums.ErrorCode;
+import com.example.base.exceptions.BaseException;
 import io.jsonwebtoken.JwtException;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,11 +20,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler(BaseException.class)
+  public ResponseEntity<ErrorResponseDTO> handleBaseException(BaseException e) {
+    ErrorCode errorCode = e.getErrorCode();
+
+    ErrorResponseDTO response = ErrorResponseDTO.of(errorCode, e.getMessage());
+
+    return ResponseEntity.status(errorCode.getStatus()).body(response);
+  }
 
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ErrorResponseDTO> handleHttpMethodNotSupportedException(
@@ -87,43 +101,30 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponseDTO> handleInvalidBodyFieldException(
     MethodArgumentNotValidException e
   ) {
-    final FieldError fieldError = e.getBindingResult().getFieldErrors().get(0);
-    final String fieldName = fieldError.getField();
-    final String errorMessage = fieldError.getDefaultMessage();
+    List<ErrorResponseDTO.ValidationError> errors = e
+      .getBindingResult()
+      .getFieldErrors()
+      .stream()
+      .map(error ->
+        new ErrorResponseDTO.ValidationError(error.getField(), error.getDefaultMessage())
+      )
+      .toList();
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-      ErrorResponseDTO.builder()
-        .status(HttpStatus.BAD_REQUEST.value())
-        .message("Field `%s` %s".formatted(fieldName, errorMessage))
-        .build()
+      ErrorResponseDTO.ofValidation(errors)
     );
   }
 
-  @ExceptionHandler(ResponseStatusException.class)
-  public ResponseEntity<ErrorResponseDTO> handleHttpException(ResponseStatusException e) {
-    if (e.getStatusCode().value() >= 500) {
-      log.error("Unknown error: {}", e);
-      return ResponseEntity.status(e.getStatusCode()).body(
-        ErrorResponseDTO.builder()
-          .status(e.getStatusCode().value())
-          .message("Unknown error")
-          .build()
-      );
-    }
-
-    return ResponseEntity.status(e.getStatusCode()).body(
-      ErrorResponseDTO.builder().status(e.getStatusCode().value()).message(e.getReason()).build()
-    );
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponseDTO> handleJsonError(HttpMessageNotReadableException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponseDTO.of(INVALID_REQUEST));
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponseDTO> handleUnknownException(Exception e) {
-    log.error("Unknown error: {}", e);
+    log.error("Unknown error: ", e);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-      ErrorResponseDTO.builder()
-        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-        .message("Unknown error")
-        .build()
+      ErrorResponseDTO.of(UNKNOWN_ERROR)
     );
   }
 }

@@ -1,13 +1,18 @@
 package com.example.modules.auth.filters;
 
+import static com.example.base.enums.ErrorCode.OPERATION_NOT_ALLOWED;
+import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
+import static com.example.base.enums.ErrorCode.TOKEN_REQUIRED;
+import static com.example.base.enums.ErrorCode.UNKNOWN_ERROR;
+import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
+
 import com.example.base.dtos.ErrorResponseDTO;
+import com.example.base.exceptions.BusinessException;
 import com.example.base.utils.AppRoutes;
 import com.example.modules.auth.annotations.AllowRoles;
 import com.example.modules.auth.annotations.OptionalAuth;
 import com.example.modules.auth.annotations.Public;
 import com.example.modules.auth.enums.Role;
-import com.example.modules.auth.exceptions.InvalidCredentialsException;
-import com.example.modules.auth.exceptions.TokenInvalidatedException;
 import com.example.modules.auth.services.JwtService;
 import com.example.modules.users.entities.User;
 import com.example.modules.users.repositories.UsersRepository;
@@ -23,10 +28,12 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -48,7 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   JwtService jwtService;
   UsersRepository usersRepository;
+
+  @Qualifier("requestMappingHandlerMapping")
   RequestMappingHandlerMapping handlerMapping;
+
   ObjectMapper objectMapper;
 
   @Override
@@ -74,7 +84,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return;
       }
 
-      sendUnauthorizedResponse(response, objectMapper);
+      sendUnauthorizedResponse(
+        response,
+        objectMapper,
+        TOKEN_REQUIRED.getCode(),
+        TOKEN_REQUIRED.getMessage()
+      );
       return;
     }
 
@@ -86,10 +101,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       final String userId = decodedToken.getPayload().getSubject();
 
       if (jwtService.isTokenInvalidated(userId, tokenIssuedAt)) {
-        throw new TokenInvalidatedException();
+        throw new BusinessException(TOKEN_INVALIDATED);
       }
 
-      User user = usersRepository.findById(userId).orElseThrow(InvalidCredentialsException::new);
+      Optional<User> user = usersRepository.findById(userId);
+
+      if (user.isEmpty()) {
+        sendUnauthorizedResponse(
+          response,
+          objectMapper,
+          USER_NOT_FOUND.getCode(),
+          "The user belonging to this token no longer exists."
+        );
+      }
 
       final String currentRole = decodedToken.getPayload().get("role", String.class);
       final List<String> allowRoles = getAllowRolesOfCurrentRoute(request)
@@ -98,7 +122,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         .collect(Collectors.toList());
 
       if (!allowRoles.isEmpty() && !allowRoles.contains(currentRole)) {
-        sendUnauthorizedResponse(response, objectMapper);
+        sendUnauthorizedResponse(
+          response,
+          objectMapper,
+          OPERATION_NOT_ALLOWED.getCode(),
+          OPERATION_NOT_ALLOWED.getMessage()
+        );
         return;
       }
 
@@ -117,7 +146,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return;
       }
 
-      sendUnauthorizedResponse(response, objectMapper);
+      response.setStatus(UNKNOWN_ERROR.getStatus().value());
+      response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+      objectMapper.writeValue(
+        response.getOutputStream(),
+        ErrorResponseDTO.builder()
+          .status(UNKNOWN_ERROR.getStatus().value())
+          .message(UNKNOWN_ERROR.getMessage())
+          .build()
+      );
     }
   }
 
@@ -166,8 +203,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return Collections.emptyList();
   }
 
-  private void sendUnauthorizedResponse(HttpServletResponse response, ObjectMapper objectMapper)
-    throws IOException {
+  private void sendUnauthorizedResponse(
+    HttpServletResponse response,
+    ObjectMapper objectMapper,
+    String code,
+    String message
+  ) throws IOException {
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
     objectMapper.writeValue(

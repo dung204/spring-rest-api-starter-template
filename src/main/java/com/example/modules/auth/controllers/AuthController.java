@@ -8,7 +8,6 @@ import com.example.modules.auth.annotations.Public;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
-import com.example.modules.auth.dtos.RefreshTokenRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
 import com.example.modules.auth.services.AuthService;
 import com.example.modules.users.entities.User;
@@ -16,10 +15,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,7 +64,22 @@ public class AuthController {
   @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true)
   @PostMapping(path = "/login")
   @ResponseStatus(HttpStatus.CREATED)
-  public SuccessResponseDTO<AuthTokenDTO> login(@RequestBody @Valid LoginRequestDTO loginRequest) {
+  public SuccessResponseDTO<AuthTokenDTO> login(
+    @RequestBody @Valid LoginRequestDTO loginRequest,
+    HttpServletResponse response
+  ) {
+    AuthTokenDTO authToken = authService.login(loginRequest);
+
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", authToken.getRefreshToken())
+      .httpOnly(true)
+      .secure(true)
+      .path("/")
+      .maxAge(Duration.ofDays(365))
+      .sameSite("Strict")
+      .build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
       .message("Login successfully")
@@ -88,8 +107,21 @@ public class AuthController {
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<AuthTokenDTO> register(
-    @RequestBody @Valid RegisterRequestDTO registerRequest
+    @RequestBody @Valid RegisterRequestDTO registerRequest,
+    HttpServletResponse response
   ) {
+    AuthTokenDTO authToken = authService.register(registerRequest);
+
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", authToken.getRefreshToken())
+      .httpOnly(true)
+      .secure(true)
+      .path("/")
+      .maxAge(Duration.ofDays(365))
+      .sameSite("Strict")
+      .build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
       .message("Registration successful")
@@ -119,12 +151,12 @@ public class AuthController {
   @PostMapping("/refresh")
   @ResponseStatus(HttpStatus.CREATED)
   public SuccessResponseDTO<AuthTokenDTO> refreshToken(
-    @RequestBody @Valid RefreshTokenRequestDTO refreshTokenRequestDTO
+    @CookieValue(required = false) String refreshToken
   ) {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
       .message("Refresh token successfully")
-      .data(authService.refresh(refreshTokenRequestDTO.getRefreshToken()))
+      .data(authService.refresh(refreshToken))
       .build();
   }
 

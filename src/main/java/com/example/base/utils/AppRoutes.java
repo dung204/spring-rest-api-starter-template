@@ -39,7 +39,8 @@ public final class AppRoutes {
     "/api-docs/**",
     "/favicon.ico",
     "/index.html",
-    "/swagger-ui/**"
+    "/swagger-ui/**",
+    "/actuator/**"
   );
 
   public static boolean isWhitelistedRoute(String path) {

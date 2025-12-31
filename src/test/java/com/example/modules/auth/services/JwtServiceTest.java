@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.example.base.BaseServiceTest;
-import com.example.modules.auth.exceptions.InvalidCredentialsException;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.entities.User;
 import io.jsonwebtoken.Claims;
@@ -164,33 +163,6 @@ public class JwtServiceTest extends BaseServiceTest {
     assertEquals(mockUser.getAccount().getRole().getValue(), claims.get("role"));
     assertNotNull(claims.getIssuedAt());
     assertNotNull(claims.getExpiration());
-  }
-
-  @Test
-  void testVerifyAccessToken_WithInvalidToken_ShouldThrowInvalidCredentialsException() {
-    String invalidToken = "invalid.token.value";
-
-    Exception exception = assertThrows(InvalidCredentialsException.class, () ->
-      jwtService.verifyAccessToken(invalidToken)
-    );
-
-    assertNotNull(exception.getMessage());
-  }
-
-  @Test
-  void testVerifyAccessToken_WithExpiredToken_ShouldThrowInvalidCredentialsException() {
-    User mockUser = getMockUser();
-    // Create a token with expiration in the past
-    ReflectionTestUtils.setField(jwtService, "ACCESS_EXPIRATION", -10L); // expired 10 seconds ago
-    String expiredToken = jwtService.generateAccessToken(mockUser);
-
-    ReflectionTestUtils.setField(jwtService, "ACCESS_EXPIRATION", TEST_ACCESS_EXPIRATION); // restore
-
-    Exception exception = assertThrows(InvalidCredentialsException.class, () ->
-      jwtService.verifyAccessToken(expiredToken)
-    );
-
-    assertNotNull(exception.getMessage());
   }
 
   @Test

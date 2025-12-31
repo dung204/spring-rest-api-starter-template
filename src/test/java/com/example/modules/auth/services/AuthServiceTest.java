@@ -1,5 +1,9 @@
 package com.example.modules.auth.services;
 
+import static com.example.base.enums.ErrorCode.EMAIL_USED;
+import static com.example.base.enums.ErrorCode.INVALID_CREDENTIALS;
+import static com.example.base.enums.ErrorCode.PASSWORD_NOT_MATCH;
+import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,15 +12,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.example.base.BaseServiceTest;
+import com.example.base.exceptions.BusinessException;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
 import com.example.modules.auth.entities.Account;
-import com.example.modules.auth.exceptions.EmailHasAlreadyBeenUsedException;
-import com.example.modules.auth.exceptions.InvalidCredentialsException;
-import com.example.modules.auth.exceptions.PasswordNotMatchException;
-import com.example.modules.auth.exceptions.TokenInvalidatedException;
 import com.example.modules.auth.repositories.AccountsRepository;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.dtos.UserProfileDTO;
@@ -103,7 +104,10 @@ public class AuthServiceTest extends BaseServiceTest {
 
     when(accountsRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-    assertThrows(InvalidCredentialsException.class, () -> authService.login(loginRequest));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.login(loginRequest)
+    );
+    assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
   @Test
@@ -121,7 +125,10 @@ public class AuthServiceTest extends BaseServiceTest {
     when(accountsRepository.findByEmail(email)).thenReturn(Optional.of(mockAccount));
     when(passwordEncoder.matches(password, mockAccount.getPassword())).thenReturn(false);
 
-    assertThrows(InvalidCredentialsException.class, () -> authService.login(loginRequest));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.login(loginRequest)
+    );
+    assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
   @Test
@@ -171,9 +178,11 @@ public class AuthServiceTest extends BaseServiceTest {
 
     when(accountsRepository.findByEmail(email)).thenReturn(Optional.of(existingAccount));
 
-    assertThrows(EmailHasAlreadyBeenUsedException.class, () ->
+    BusinessException ex = assertThrows(BusinessException.class, () ->
       authService.register(registerRequest)
     );
+
+    assertEquals(EMAIL_USED, ex.getErrorCode());
   }
 
   @Test
@@ -261,7 +270,10 @@ public class AuthServiceTest extends BaseServiceTest {
     when(mockClaims.getIssuedAt()).thenReturn(issuedAt);
     when(jwtService.isTokenInvalidated(userId, issuedAt)).thenReturn(true);
 
-    assertThrows(TokenInvalidatedException.class, () -> authService.refresh(refreshToken));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      authService.refresh(refreshToken)
+    );
+    assertEquals(TOKEN_INVALIDATED, ex);
   }
 
   @Test
@@ -332,9 +344,10 @@ public class AuthServiceTest extends BaseServiceTest {
 
     when(passwordEncoder.matches("wrongPassword", "currentPassword")).thenReturn(false);
 
-    assertThrows(PasswordNotMatchException.class, () ->
+    BusinessException ex = assertThrows(BusinessException.class, () ->
       authService.changePassword(mockUser, request)
     );
+    assertEquals(PASSWORD_NOT_MATCH, ex.getErrorCode());
   }
 
   @Test

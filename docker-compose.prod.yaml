@@ -1,12 +1,12 @@
 services:
   postgres:
-    ports: []
+    ports: !reset []
 
   redis:
-    ports: []
+    ports: !reset []
 
   minio:
-    ports: []
+    ports: !reset []
 
   backend-app:
     container_name: backend-app

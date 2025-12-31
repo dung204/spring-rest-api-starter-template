@@ -1,5 +1,6 @@
 package com.example.modules.posts.services;
 
+import static com.example.base.enums.ErrorCode.POST_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,12 +13,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.example.base.BaseServiceTest;
+import com.example.base.exceptions.BusinessException;
 import com.example.modules.posts.dtos.CreatePostDTO;
 import com.example.modules.posts.dtos.PostResponseDTO;
 import com.example.modules.posts.dtos.PostsSearchDTO;
 import com.example.modules.posts.dtos.UpdatePostDTO;
 import com.example.modules.posts.entities.Post;
-import com.example.modules.posts.exceptions.PostNotFoundException;
 import com.example.modules.posts.repositories.PostsRepository;
 import com.example.modules.posts.utils.PostMapper;
 import com.example.modules.users.entities.User;
@@ -124,7 +125,10 @@ public class PostsServiceTest extends BaseServiceTest {
 
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    assertThrows(PostNotFoundException.class, () -> postsService.findPostById(postId, user));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.findPostById(postId, user)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
     verify(postsRepository).findOne(any(Specification.class));
     verifyNoInteractions(postMapper);
   }
@@ -219,9 +223,10 @@ public class PostsServiceTest extends BaseServiceTest {
     when(currentUser.getId()).thenReturn("user-id");
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    assertThrows(PostNotFoundException.class, () ->
+    BusinessException ex = assertThrows(BusinessException.class, () ->
       postsService.updatePost(postId, updatePostDTO, currentUser)
     );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
     verify(postsRepository).findOne(any(Specification.class));
     verifyNoInteractions(postMapper);
     verify(postsRepository, times(0)).save(any(Post.class));
@@ -253,7 +258,10 @@ public class PostsServiceTest extends BaseServiceTest {
 
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    assertThrows(PostNotFoundException.class, () -> postsService.deletePost(postId, currentUser));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.deletePost(postId, currentUser)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
     verify(postsRepository).findOne(any(Specification.class));
     verify(postsRepository, times(0)).save(any(Post.class));
   }
@@ -295,7 +303,10 @@ public class PostsServiceTest extends BaseServiceTest {
 
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    assertThrows(PostNotFoundException.class, () -> postsService.restorePost(postId, currentUser));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.restorePost(postId, currentUser)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
     verify(postsRepository).findOne(any(Specification.class));
     verify(postsRepository, times(0)).save(any(Post.class));
     verifyNoInteractions(postMapper);

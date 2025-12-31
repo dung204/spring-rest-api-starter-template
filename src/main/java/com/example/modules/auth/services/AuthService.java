@@ -1,18 +1,21 @@
 package com.example.modules.auth.services;
 
+import static com.example.base.enums.ErrorCode.EMAIL_USED;
+import static com.example.base.enums.ErrorCode.INVALID_CREDENTIALS;
+import static com.example.base.enums.ErrorCode.PASSWORD_NOT_MATCH;
+import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
+import static com.example.base.enums.ErrorCode.TOKEN_REQUIRED;
+import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
+
+import com.example.base.exceptions.BusinessException;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
 import com.example.modules.auth.entities.Account;
-import com.example.modules.auth.exceptions.EmailHasAlreadyBeenUsedException;
-import com.example.modules.auth.exceptions.InvalidCredentialsException;
-import com.example.modules.auth.exceptions.PasswordNotMatchException;
-import com.example.modules.auth.exceptions.TokenInvalidatedException;
 import com.example.modules.auth.repositories.AccountsRepository;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.entities.User;
-import com.example.modules.users.exceptions.UserNotFoundException;
 import com.example.modules.users.repositories.UsersRepository;
 import com.example.modules.users.utils.UserMapper;
 import io.jsonwebtoken.Claims;
@@ -44,10 +47,10 @@ public class AuthService {
 
     Account account = accountsRepository
       .findByEmail(email)
-      .orElseThrow(() -> new InvalidCredentialsException());
+      .orElseThrow(() -> new BusinessException(INVALID_CREDENTIALS));
 
     if (!passwordEncoder.matches(password, account.getPassword())) {
-      throw new InvalidCredentialsException();
+      throw new BusinessException(INVALID_CREDENTIALS);
     }
 
     User user = usersRepository.findByAccount(account).get();
@@ -68,7 +71,7 @@ public class AuthService {
 
       savedUser = usersRepository.save(User.builder().account(savedAccount).build());
     } else if (existingAccount.get().isEnabled()) {
-      throw new EmailHasAlreadyBeenUsedException();
+      throw new BusinessException(EMAIL_USED);
     } else {
       final Account account = existingAccount.get();
       account.setEmail(email);
@@ -85,17 +88,21 @@ public class AuthService {
   }
 
   public AuthTokenDTO refresh(String refreshToken) {
+    if (refreshToken == null || refreshToken.isEmpty()) {
+      throw new BusinessException(TOKEN_REQUIRED);
+    }
+
     final Jws<Claims> decodedRefreshToken = jwtService.verifyRefreshToken(refreshToken);
     final String userId = decodedRefreshToken.getPayload().getSubject();
     final Date tokenIssuedAt = decodedRefreshToken.getPayload().getIssuedAt();
 
     if (jwtService.isTokenInvalidated(userId, tokenIssuedAt)) {
-      throw new TokenInvalidatedException();
+      throw new BusinessException(TOKEN_INVALIDATED);
     }
 
     final User user = usersRepository
       .findById(userId)
-      .orElseThrow(() -> new UserNotFoundException());
+      .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
     invalidateTokens(userId);
     return getTokenResponse(user);
@@ -118,7 +125,7 @@ public class AuthService {
     if (
       currentPassword != null && !passwordEncoder.matches(request.getPassword(), currentPassword)
     ) {
-      throw new PasswordNotMatchException();
+      throw new BusinessException(PASSWORD_NOT_MATCH);
     }
 
     Account userAccount = user.getAccount();

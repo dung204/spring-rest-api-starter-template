@@ -1,5 +1,6 @@
 package com.example.modules.posts.services;
 
+import static com.example.base.enums.ErrorCode.POST_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,13 +9,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.example.base.BaseServiceIntegrationTest;
+import com.example.base.exceptions.BusinessException;
 import com.example.modules.posts.dtos.CreatePostDTO;
 import com.example.modules.posts.dtos.MePostsSearchDTO;
 import com.example.modules.posts.dtos.PostResponseDTO;
 import com.example.modules.posts.dtos.PostsSearchDTO;
 import com.example.modules.posts.dtos.UpdatePostDTO;
 import com.example.modules.posts.entities.Post;
-import com.example.modules.posts.exceptions.PostNotFoundException;
 import com.example.modules.posts.repositories.PostsRepository;
 import com.example.modules.users.entities.User;
 import java.time.Instant;
@@ -160,19 +161,28 @@ public class PostsServiceIntegrationTest extends BaseServiceIntegrationTest {
   @Test
   void findPostById_WhenCurrentUserNotExistAndPublicPostWithIdNotExist_ShouldThrowPostNotFoundException() {
     String postId = "not-found";
-    assertThrows(PostNotFoundException.class, () -> postsService.findPostById(postId, null));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.findPostById(postId, null)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
   }
 
   @Test
   void findPostById_WhenCurrentUserNotExistAndPrivatePostWithIdExists_ShouldThrowPostNotFoundException() {
     String postId = privatePost.getId();
-    assertThrows(PostNotFoundException.class, () -> postsService.findPostById(postId, null));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.findPostById(postId, null)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
   }
 
   @Test
   void findPostById_WhenCurrentUserNotExistAndDeletedPostWithIdExists_ShouldThrowPostNotFoundException() {
     String postId = deletedPublicPost.getId();
-    assertThrows(PostNotFoundException.class, () -> postsService.findPostById(postId, null));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.findPostById(postId, null)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
   }
 
   @Test
@@ -245,9 +255,10 @@ public class PostsServiceIntegrationTest extends BaseServiceIntegrationTest {
     User user = getUser();
     UpdatePostDTO updatePostDTO = UpdatePostDTO.builder().build();
 
-    assertThrows(PostNotFoundException.class, () ->
+    BusinessException ex = assertThrows(BusinessException.class, () ->
       postsService.updatePost(postId, updatePostDTO, user)
     );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
   }
 
   @Test
@@ -266,7 +277,10 @@ public class PostsServiceIntegrationTest extends BaseServiceIntegrationTest {
     String postId = "not-found";
     User user = getUser();
 
-    assertThrows(PostNotFoundException.class, () -> postsService.deletePost(postId, user));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.deletePost(postId, user)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
   }
 
   @Test
@@ -285,6 +299,9 @@ public class PostsServiceIntegrationTest extends BaseServiceIntegrationTest {
     String postId = publicPost.getId();
     User user = getUser();
 
-    assertThrows(PostNotFoundException.class, () -> postsService.restorePost(postId, user));
+    BusinessException ex = assertThrows(BusinessException.class, () ->
+      postsService.restorePost(postId, user)
+    );
+    assertEquals(POST_NOT_FOUND, ex.getErrorCode());
   }
 }
