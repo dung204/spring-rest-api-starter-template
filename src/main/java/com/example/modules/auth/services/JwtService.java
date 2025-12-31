@@ -1,9 +1,13 @@
 package com.example.modules.auth.services;
 
+import com.example.base.enums.ErrorCode;
+import com.example.base.exceptions.JwtAuthenticationException;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.entities.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -73,17 +77,26 @@ public class JwtService {
   }
 
   public Jws<Claims> verifyAccessToken(String token) {
-    return Jwts.parser()
-      .verifyWith(getSecretKeyFromString(ACCESS_SECRET))
-      .build()
-      .parseSignedClaims(token);
+    return parseToken(token, ACCESS_SECRET);
   }
 
   public Jws<Claims> verifyRefreshToken(String token) {
-    return Jwts.parser()
-      .verifyWith(getSecretKeyFromString(REFRESH_SECRET))
-      .build()
-      .parseSignedClaims(token);
+    return parseToken(token, REFRESH_SECRET);
+  }
+
+  private Jws<Claims> parseToken(String token, String secretKey) {
+    try {
+      return Jwts.parser()
+        .verifyWith(getSecretKeyFromString(secretKey))
+        .build()
+        .parseSignedClaims(token);
+    } catch (ExpiredJwtException e) {
+      throw new JwtAuthenticationException(ErrorCode.TOKEN_EXPIRED, e);
+    } catch (IllegalArgumentException e) {
+      throw new JwtAuthenticationException(ErrorCode.TOKEN_REQUIRED, e);
+    } catch (JwtException e) {
+      throw new JwtAuthenticationException(ErrorCode.TOKEN_INVALID, e);
+    }
   }
 
   private SecretKey getSecretKeyFromString(String secret) {

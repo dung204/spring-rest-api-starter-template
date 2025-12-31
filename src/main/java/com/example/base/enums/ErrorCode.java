@@ -20,14 +20,18 @@ public enum ErrorCode {
     "This operation is not allowed."
   ),
 
-  // 2. Used for BusinessException
+  // 2. Used for JwtAuthenticationException
+  TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "TOKEN_REQUIRED", "Token is required"),
+  TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED", "Token has expired"),
+  TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "TOKEN_INVALID", "Token is invalid"),
+
+  // 3. Used for BusinessException
+  TOKEN_INVALIDATED(HttpStatus.UNAUTHORIZED, "TOKEN_INVALIDATED", "Token is invalidated"),
   INVALID_CREDENTIALS(
     HttpStatus.UNAUTHORIZED,
     "INVALID_CREDENTIALS",
     "Email or password is incorrect"
   ),
-  TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "TOKEN_REQUIRED", "Token is required"),
-  TOKEN_INVALIDATED(HttpStatus.UNAUTHORIZED, "TOKEN_INVALIDATED", "Token is invalidated"),
   PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "PASSWORD_NOT_MATCH", "Passwords do not match"),
   USER_EXISTED(HttpStatus.BAD_REQUEST, "USER_EXISTED", "User already exists"),
   EMAIL_USED(HttpStatus.BAD_REQUEST, "EMAIL_USED", "Email has already been used"),
@@ -37,7 +41,7 @@ public enum ErrorCode {
     "Discount code is invalid or expired"
   ),
 
-  // 3. Used for ResourceNotFoundException
+  // 4. Used for ResourceNotFoundException
   ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT_NOT_FOUND", "Account not found"),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"),
   POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "Post not found");

@@ -8,6 +8,7 @@ import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 
 import com.example.base.dtos.ErrorResponseDTO;
 import com.example.base.exceptions.BusinessException;
+import com.example.base.exceptions.JwtAuthenticationException;
 import com.example.base.utils.AppRoutes;
 import com.example.modules.auth.annotations.AllowRoles;
 import com.example.modules.auth.annotations.OptionalAuth;
@@ -140,6 +141,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       );
       response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
       filterChain.doFilter(request, response);
+    } catch (JwtAuthenticationException e) {
+      if (isCurrentRouteOptionalAuth) {
+        bypassAuthentication(request, response, filterChain, securityContext);
+        return;
+      }
+
+      sendUnauthorizedResponse(
+        response,
+        objectMapper,
+        e.getErrorCode().getCode(),
+        e.getErrorCode().getMessage()
+      );
     } catch (Exception e) {
       if (isCurrentRouteOptionalAuth) {
         bypassAuthentication(request, response, filterChain, securityContext);
