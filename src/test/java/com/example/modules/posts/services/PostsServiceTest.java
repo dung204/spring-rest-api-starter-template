@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.example.base.BaseServiceTest;
-import com.example.base.exceptions.BusinessException;
+import com.example.base.exceptions.AppException;
 import com.example.modules.posts.dtos.CreatePostDTO;
 import com.example.modules.posts.dtos.PostResponseDTO;
 import com.example.modules.posts.dtos.PostsSearchDTO;
@@ -125,7 +125,7 @@ public class PostsServiceTest extends BaseServiceTest {
 
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
+    AppException ex = assertThrows(AppException.class, () ->
       postsService.findPostById(postId, user)
     );
     assertEquals(POST_NOT_FOUND, ex.getErrorCode());
@@ -223,7 +223,7 @@ public class PostsServiceTest extends BaseServiceTest {
     when(currentUser.getId()).thenReturn("user-id");
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
+    AppException ex = assertThrows(AppException.class, () ->
       postsService.updatePost(postId, updatePostDTO, currentUser)
     );
     assertEquals(POST_NOT_FOUND, ex.getErrorCode());
@@ -258,7 +258,7 @@ public class PostsServiceTest extends BaseServiceTest {
 
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
+    AppException ex = assertThrows(AppException.class, () ->
       postsService.deletePost(postId, currentUser)
     );
     assertEquals(POST_NOT_FOUND, ex.getErrorCode());
@@ -303,7 +303,7 @@ public class PostsServiceTest extends BaseServiceTest {
 
     when(postsRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
+    AppException ex = assertThrows(AppException.class, () ->
       postsService.restorePost(postId, currentUser)
     );
     assertEquals(POST_NOT_FOUND, ex.getErrorCode());

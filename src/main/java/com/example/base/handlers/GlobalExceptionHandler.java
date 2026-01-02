@@ -5,8 +5,7 @@ import static com.example.base.enums.ErrorCode.UNKNOWN_ERROR;
 
 import com.example.base.dtos.ErrorResponseDTO;
 import com.example.base.enums.ErrorCode;
-import com.example.base.exceptions.BaseException;
-import io.jsonwebtoken.JwtException;
+import com.example.base.exceptions.AppException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
@@ -25,8 +24,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Slf4j
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(BaseException.class)
-  public ResponseEntity<ErrorResponseDTO> handleBaseException(BaseException e) {
+  @ExceptionHandler(AppException.class)
+  public ResponseEntity<ErrorResponseDTO> handleBaseException(AppException e) {
     ErrorCode errorCode = e.getErrorCode();
 
     ErrorResponseDTO response = ErrorResponseDTO.of(errorCode, e.getMessage());
@@ -41,16 +40,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
       ErrorResponseDTO.builder()
         .status(HttpStatus.METHOD_NOT_ALLOWED.value())
-        .message(e.getMessage())
-        .build()
-    );
-  }
-
-  @ExceptionHandler({ JwtException.class, IllegalArgumentException.class })
-  public ResponseEntity<ErrorResponseDTO> handleJwtException(Exception e) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-      ErrorResponseDTO.builder()
-        .status(HttpStatus.BAD_REQUEST.value())
         .message(e.getMessage())
         .build()
     );

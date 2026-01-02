@@ -7,8 +7,10 @@ import com.example.modules.auth.annotations.CurrentUser;
 import com.example.modules.auth.annotations.Public;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
+import com.example.modules.auth.dtos.ForgotPasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
+import com.example.modules.auth.dtos.ResetPasswordRequestDTO;
 import com.example.modules.auth.services.AuthService;
 import com.example.modules.users.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,7 +84,7 @@ public class AuthController {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
       .message("Login successfully")
-      .data(authService.login(loginRequest))
+      .data(authToken)
       .build();
   }
 
@@ -125,7 +126,7 @@ public class AuthController {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
       .message("Registration successful")
-      .data(authService.register(registerRequest))
+      .data(authToken)
       .build();
   }
 
@@ -172,7 +173,7 @@ public class AuthController {
       @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
     }
   )
-  @DeleteMapping("/logout")
+  @PostMapping("/logout")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void logout(@CurrentUser User currentUser) {
     authService.logout(currentUser);
@@ -197,5 +198,41 @@ public class AuthController {
     @RequestBody @Valid ChangePasswordRequestDTO request
   ) {
     authService.changePassword(currentUser, request);
+  }
+
+  @Public
+  @Operation(
+    summary = "Request to send a reset password email to a specific email",
+    responses = {
+      @ApiResponse(
+        responseCode = "204",
+        description = "Request to send email successfully",
+        content = @Content
+      ),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
+    }
+  )
+  @PostMapping("/forgot-password")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO request) {
+    authService.forgotPassword(request.getEmail());
+  }
+
+  @Public
+  @Operation(
+    summary = "Reset the password after user receive a reset password email",
+    responses = {
+      @ApiResponse(
+        responseCode = "204",
+        description = "Reset password successfully",
+        content = @Content
+      ),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content),
+    }
+  )
+  @PostMapping("/reset-password")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request) {
+    authService.resetPassword(request);
   }
 }

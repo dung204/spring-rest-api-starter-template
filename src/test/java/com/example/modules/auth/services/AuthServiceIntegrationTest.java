@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.example.base.BaseServiceIntegrationTest;
-import com.example.base.exceptions.BusinessException;
+import com.example.base.exceptions.AppException;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
@@ -53,9 +53,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .password("password@123456")
       .build();
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.login(loginRequest)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.login(loginRequest));
     assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
@@ -66,9 +64,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .password("invalidpassword")
       .build();
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.login(loginRequest)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.login(loginRequest));
     assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
@@ -93,9 +89,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .password("newpassword")
       .build();
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.register(registerRequest)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.register(registerRequest));
 
     assertEquals(EMAIL_USED, ex.getErrorCode());
   }
@@ -138,9 +132,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
     Thread.sleep(2000);
     authService.logout(user);
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.refresh(refreshToken)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.refresh(refreshToken));
     assertEquals(TOKEN_INVALIDATED, ex.getErrorCode());
   }
 
@@ -151,9 +143,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
 
     usersRepository.deleteAll();
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.refresh(refreshToken)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.refresh(refreshToken));
     assertEquals(USER_NOT_FOUND, ex.getErrorCode());
   }
 
@@ -200,7 +190,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
       .newPassword("newPassword")
       .build();
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
+    AppException ex = assertThrows(AppException.class, () ->
       authService.changePassword(user, request)
     );
     assertEquals(PASSWORD_NOT_MATCH, ex.getErrorCode());

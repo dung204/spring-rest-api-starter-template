@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public enum ErrorCode {
-  // 1. Common errors
   UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "UNKNOWN_ERROR", "An unexpected error occurred"),
   INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "Invalid request format"),
   VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Input validation failed"),
@@ -20,12 +19,10 @@ public enum ErrorCode {
     "This operation is not allowed."
   ),
 
-  // 2. Used for JwtAuthenticationException
   TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "TOKEN_REQUIRED", "Token is required"),
   TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED", "Token has expired"),
   TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "TOKEN_INVALID", "Token is invalid"),
 
-  // 3. Used for BusinessException
   TOKEN_INVALIDATED(HttpStatus.UNAUTHORIZED, "TOKEN_INVALIDATED", "Token is invalidated"),
   INVALID_CREDENTIALS(
     HttpStatus.UNAUTHORIZED,
@@ -41,7 +38,6 @@ public enum ErrorCode {
     "Discount code is invalid or expired"
   ),
 
-  // 4. Used for ResourceNotFoundException
   ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT_NOT_FOUND", "Account not found"),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"),
   POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "Post not found");

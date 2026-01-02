@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.example.base.BaseServiceTest;
-import com.example.base.exceptions.BusinessException;
+import com.example.base.exceptions.AppException;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
@@ -104,9 +104,7 @@ public class AuthServiceTest extends BaseServiceTest {
 
     when(accountsRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.login(loginRequest)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.login(loginRequest));
     assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
@@ -125,9 +123,7 @@ public class AuthServiceTest extends BaseServiceTest {
     when(accountsRepository.findByEmail(email)).thenReturn(Optional.of(mockAccount));
     when(passwordEncoder.matches(password, mockAccount.getPassword())).thenReturn(false);
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.login(loginRequest)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.login(loginRequest));
     assertEquals(INVALID_CREDENTIALS, ex.getErrorCode());
   }
 
@@ -178,9 +174,7 @@ public class AuthServiceTest extends BaseServiceTest {
 
     when(accountsRepository.findByEmail(email)).thenReturn(Optional.of(existingAccount));
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.register(registerRequest)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.register(registerRequest));
 
     assertEquals(EMAIL_USED, ex.getErrorCode());
   }
@@ -270,9 +264,7 @@ public class AuthServiceTest extends BaseServiceTest {
     when(mockClaims.getIssuedAt()).thenReturn(issuedAt);
     when(jwtService.isTokenInvalidated(userId, issuedAt)).thenReturn(true);
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
-      authService.refresh(refreshToken)
-    );
+    AppException ex = assertThrows(AppException.class, () -> authService.refresh(refreshToken));
     assertEquals(TOKEN_INVALIDATED, ex);
   }
 
@@ -344,7 +336,7 @@ public class AuthServiceTest extends BaseServiceTest {
 
     when(passwordEncoder.matches("wrongPassword", "currentPassword")).thenReturn(false);
 
-    BusinessException ex = assertThrows(BusinessException.class, () ->
+    AppException ex = assertThrows(AppException.class, () ->
       authService.changePassword(mockUser, request)
     );
     assertEquals(PASSWORD_NOT_MATCH, ex.getErrorCode());

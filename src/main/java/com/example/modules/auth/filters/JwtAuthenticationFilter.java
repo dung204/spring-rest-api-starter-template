@@ -3,12 +3,9 @@ package com.example.modules.auth.filters;
 import static com.example.base.enums.ErrorCode.OPERATION_NOT_ALLOWED;
 import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
 import static com.example.base.enums.ErrorCode.TOKEN_REQUIRED;
-import static com.example.base.enums.ErrorCode.UNKNOWN_ERROR;
 import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 
-import com.example.base.dtos.ErrorResponseDTO;
-import com.example.base.exceptions.BusinessException;
-import com.example.base.exceptions.JwtAuthenticationException;
+import com.example.base.exceptions.AppException;
 import com.example.base.utils.AppRoutes;
 import com.example.modules.auth.annotations.AllowRoles;
 import com.example.modules.auth.annotations.OptionalAuth;
@@ -17,7 +14,6 @@ import com.example.modules.auth.enums.Role;
 import com.example.modules.auth.services.JwtService;
 import com.example.modules.users.entities.User;
 import com.example.modules.users.repositories.UsersRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.lang.Collections;
@@ -29,14 +25,12 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,6 +40,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -60,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Qualifier("requestMappingHandlerMapping")
   RequestMappingHandlerMapping handlerMapping;
 
-  ObjectMapper objectMapper;
+  HandlerExceptionResolver handlerExceptionResolver;
 
   @Override
   protected void doFilterInternal(
@@ -78,23 +73,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-      if (isCurrentRouteOptionalAuth) {
-        bypassAuthentication(request, response, filterChain, securityContext);
-        return;
+    try {
+      final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+      if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        if (isCurrentRouteOptionalAuth) {
+          bypassAuthentication(request, response, filterChain, securityContext);
+          return;
+        }
+
+        throw new AppException(TOKEN_REQUIRED);
       }
 
-      sendUnauthorizedResponse(
-        response,
-        objectMapper,
-        TOKEN_REQUIRED.getCode(),
-        TOKEN_REQUIRED.getMessage()
-      );
-      return;
-    }
-
-    try {
       final Jws<Claims> decodedToken = jwtService.verifyAccessToken(
         authorizationHeader.substring("Bearer ".length())
       );
@@ -102,19 +91,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       final String userId = decodedToken.getPayload().getSubject();
 
       if (jwtService.isTokenInvalidated(userId, tokenIssuedAt)) {
-        throw new BusinessException(TOKEN_INVALIDATED);
+        throw new AppException(TOKEN_INVALIDATED);
       }
 
-      Optional<User> user = usersRepository.findById(userId);
-
-      if (user.isEmpty()) {
-        sendUnauthorizedResponse(
-          response,
-          objectMapper,
-          USER_NOT_FOUND.getCode(),
-          "The user belonging to this token no longer exists."
+      User user = usersRepository
+        .findById(userId)
+        .orElseThrow(() ->
+          new AppException(USER_NOT_FOUND, "The user belonging to this token no longer exists.")
         );
-      }
 
       final String currentRole = decodedToken.getPayload().get("role", String.class);
       final List<String> allowRoles = getAllowRolesOfCurrentRoute(request)
@@ -123,13 +107,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         .collect(Collectors.toList());
 
       if (!allowRoles.isEmpty() && !allowRoles.contains(currentRole)) {
-        sendUnauthorizedResponse(
-          response,
-          objectMapper,
-          OPERATION_NOT_ALLOWED.getCode(),
-          OPERATION_NOT_ALLOWED.getMessage()
-        );
-        return;
+        throw new AppException(OPERATION_NOT_ALLOWED);
       }
 
       securityContext.setAuthentication(
@@ -141,33 +119,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       );
       response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
       filterChain.doFilter(request, response);
-    } catch (JwtAuthenticationException e) {
-      if (isCurrentRouteOptionalAuth) {
-        bypassAuthentication(request, response, filterChain, securityContext);
-        return;
-      }
-
-      sendUnauthorizedResponse(
-        response,
-        objectMapper,
-        e.getErrorCode().getCode(),
-        e.getErrorCode().getMessage()
-      );
     } catch (Exception e) {
       if (isCurrentRouteOptionalAuth) {
         bypassAuthentication(request, response, filterChain, securityContext);
         return;
       }
 
-      response.setStatus(UNKNOWN_ERROR.getStatus().value());
-      response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-      objectMapper.writeValue(
-        response.getOutputStream(),
-        ErrorResponseDTO.builder()
-          .status(UNKNOWN_ERROR.getStatus().value())
-          .message(UNKNOWN_ERROR.getMessage())
-          .build()
-      );
+      handlerExceptionResolver.resolveException(request, response, null, e);
     }
   }
 
@@ -214,23 +172,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return Collections.emptyList();
     }
     return Collections.emptyList();
-  }
-
-  private void sendUnauthorizedResponse(
-    HttpServletResponse response,
-    ObjectMapper objectMapper,
-    String code,
-    String message
-  ) throws IOException {
-    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-    response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-    objectMapper.writeValue(
-      response.getOutputStream(),
-      ErrorResponseDTO.builder()
-        .status(HttpStatus.UNAUTHORIZED.value())
-        .message("Unauthorized")
-        .build()
-    );
   }
 
   private void bypassAuthentication(

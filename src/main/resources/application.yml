@@ -37,6 +37,20 @@ spring:
       host: localhost
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD}
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
 
 app:
   frontend-url: ${FRONTEND_URL}
@@ -57,6 +71,9 @@ jwt:
   refresh:
     secret: ${JWT_REFRESH_SECRET}
     expiration: ${JWT_REFRESH_EXPIRATION}
+  reset-password:
+    secret: ${JWT_RESET_PASSWORD_SECRET}
+    expiration: ${JWT_RESET_PASSWORD_EXPIRATION}
 
 springdoc:
   api-docs:

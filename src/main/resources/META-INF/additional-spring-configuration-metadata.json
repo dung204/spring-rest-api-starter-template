@@ -21,6 +21,16 @@
       "description": "Expiration time (in seconds) for JWT refresh token"
     },
     {
+      "name": "jwt.reset-password.secret",
+      "type": "java.lang.String",
+      "description": "Secret key for JWT reset password token"
+    },
+    {
+      "name": "jwt.reset-password.expiration",
+      "type": "java.lang.Long",
+      "description": "Expiration time (in seconds) for JWT reset password token"
+    },
+    {
       "name": "minio.endpoint",
       "type": "java.lang.String",
       "description": "URL to MinIO"

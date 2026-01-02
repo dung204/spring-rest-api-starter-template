@@ -7,13 +7,16 @@ import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
 import static com.example.base.enums.ErrorCode.TOKEN_REQUIRED;
 import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 
-import com.example.base.exceptions.BusinessException;
+import com.example.base.exceptions.AppException;
 import com.example.modules.auth.dtos.AuthTokenDTO;
 import com.example.modules.auth.dtos.ChangePasswordRequestDTO;
 import com.example.modules.auth.dtos.LoginRequestDTO;
 import com.example.modules.auth.dtos.RegisterRequestDTO;
+import com.example.modules.auth.dtos.ResetPasswordRequestDTO;
 import com.example.modules.auth.entities.Account;
 import com.example.modules.auth.repositories.AccountsRepository;
+import com.example.modules.email.dtos.SendEmailEventDTO;
+import com.example.modules.redis.publishers.RedisStreamPublisher;
 import com.example.modules.redis.services.RedisService;
 import com.example.modules.users.entities.User;
 import com.example.modules.users.repositories.UsersRepository;
@@ -23,12 +26,16 @@ import io.jsonwebtoken.Jws;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +47,13 @@ public class AuthService {
   private final RedisService redisService;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
+  private final RedisStreamPublisher redisStreamPublisher;
+
+  @Value("${app.frontend-url}")
+  private String frontendUrl;
+
+  @Value("${jwt.reset-password.expiration}")
+  private Long RESET_PASSWORD_EXPIRATION;
 
   public AuthTokenDTO login(LoginRequestDTO loginRequest) {
     String email = loginRequest.getEmail();
@@ -47,10 +61,10 @@ public class AuthService {
 
     Account account = accountsRepository
       .findByEmail(email)
-      .orElseThrow(() -> new BusinessException(INVALID_CREDENTIALS));
+      .orElseThrow(() -> new AppException(INVALID_CREDENTIALS));
 
     if (!passwordEncoder.matches(password, account.getPassword())) {
-      throw new BusinessException(INVALID_CREDENTIALS);
+      throw new AppException(INVALID_CREDENTIALS);
     }
 
     User user = usersRepository.findByAccount(account).get();
@@ -71,7 +85,7 @@ public class AuthService {
 
       savedUser = usersRepository.save(User.builder().account(savedAccount).build());
     } else if (existingAccount.get().isEnabled()) {
-      throw new BusinessException(EMAIL_USED);
+      throw new AppException(EMAIL_USED);
     } else {
       final Account account = existingAccount.get();
       account.setEmail(email);
@@ -89,7 +103,7 @@ public class AuthService {
 
   public AuthTokenDTO refresh(String refreshToken) {
     if (refreshToken == null || refreshToken.isEmpty()) {
-      throw new BusinessException(TOKEN_REQUIRED);
+      throw new AppException(TOKEN_REQUIRED);
     }
 
     final Jws<Claims> decodedRefreshToken = jwtService.verifyRefreshToken(refreshToken);
@@ -97,12 +111,12 @@ public class AuthService {
     final Date tokenIssuedAt = decodedRefreshToken.getPayload().getIssuedAt();
 
     if (jwtService.isTokenInvalidated(userId, tokenIssuedAt)) {
-      throw new BusinessException(TOKEN_INVALIDATED);
+      throw new AppException(TOKEN_INVALIDATED);
     }
 
     final User user = usersRepository
       .findById(userId)
-      .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+      .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
     invalidateTokens(userId);
     return getTokenResponse(user);
@@ -125,7 +139,7 @@ public class AuthService {
     if (
       currentPassword != null && !passwordEncoder.matches(request.getPassword(), currentPassword)
     ) {
-      throw new BusinessException(PASSWORD_NOT_MATCH);
+      throw new AppException(PASSWORD_NOT_MATCH);
     }
 
     Account userAccount = user.getAccount();
@@ -133,6 +147,52 @@ public class AuthService {
     accountsRepository.save(userAccount);
 
     invalidateTokens(user.getId());
+  }
+
+  public void forgotPassword(String email) {
+    User user = usersRepository
+      .findByAccountEmail(email)
+      .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+    String resetToken = jwtService.generateResetPasswordToken(user);
+
+    String resetLink = UriComponentsBuilder.fromUriString(frontendUrl)
+      .path("/reset-password")
+      .queryParam("token", resetToken)
+      .build()
+      .toUriString();
+
+    SendEmailEventDTO event = SendEmailEventDTO.builder()
+      .to(user.getAccount().getEmail())
+      .subject("Reset your password")
+      .templateName("forgot-password")
+      .variables(
+        Map.of(
+          "username",
+          "%s %s".formatted(user.getFirstName(), user.getLastName()),
+          "resetLink",
+          resetLink,
+          "expirationTime",
+          TimeUnit.SECONDS.toMinutes(RESET_PASSWORD_EXPIRATION)
+        )
+      )
+      .build();
+
+    redisStreamPublisher.send("stream:email_sending", event);
+  }
+
+  public void resetPassword(ResetPasswordRequestDTO request) {
+    String token = request.getToken();
+    String newPassword = request.getPassword();
+    String userId = jwtService.extractUserIdUnverified(token);
+    User user = usersRepository
+      .findById(userId)
+      .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+    jwtService.verifyResetPasswordToken(token, user);
+
+    user.getAccount().setPassword(passwordEncoder.encode(newPassword));
+    usersRepository.save(user);
   }
 
   private AuthTokenDTO getTokenResponse(User user) {
