@@ -3,7 +3,7 @@ package com.example.modules.auth.services;
 import static com.example.base.enums.ErrorCode.EMAIL_USED;
 import static com.example.base.enums.ErrorCode.INVALID_CREDENTIALS;
 import static com.example.base.enums.ErrorCode.PASSWORD_NOT_MATCH;
-import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
+import static com.example.base.enums.ErrorCode.TOKEN_REVOKED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -265,7 +265,7 @@ public class AuthServiceTest extends BaseServiceTest {
     when(jwtService.isTokenInvalidated(userId, issuedAt)).thenReturn(true);
 
     AppException ex = assertThrows(AppException.class, () -> authService.refresh(refreshToken));
-    assertEquals(TOKEN_INVALIDATED, ex);
+    assertEquals(TOKEN_REVOKED, ex);
   }
 
   @Test

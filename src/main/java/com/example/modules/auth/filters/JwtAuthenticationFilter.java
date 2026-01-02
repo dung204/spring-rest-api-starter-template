@@ -1,8 +1,8 @@
 package com.example.modules.auth.filters;
 
 import static com.example.base.enums.ErrorCode.OPERATION_NOT_ALLOWED;
-import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
 import static com.example.base.enums.ErrorCode.TOKEN_REQUIRED;
+import static com.example.base.enums.ErrorCode.TOKEN_REVOKED;
 import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 
 import com.example.base.exceptions.AppException;
@@ -91,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       final String userId = decodedToken.getPayload().getSubject();
 
       if (jwtService.isTokenInvalidated(userId, tokenIssuedAt)) {
-        throw new AppException(TOKEN_INVALIDATED);
+        throw new AppException(TOKEN_REVOKED);
       }
 
       User user = usersRepository

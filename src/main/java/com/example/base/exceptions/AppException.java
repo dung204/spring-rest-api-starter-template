@@ -10,24 +10,29 @@ import lombok.experimental.FieldDefaults;
 public class AppException extends RuntimeException {
 
   ErrorCode errorCode;
+  Object[] args;
 
-  public AppException(ErrorCode errorCode) {
-    super(errorCode.getMessage());
+  public AppException(ErrorCode errorCode, Object... args) {
+    super(errorCode.getMessageKey());
     this.errorCode = errorCode;
+    this.args = args;
   }
 
-  public AppException(ErrorCode errorCode, String customMessage) {
+  public AppException(ErrorCode errorCode, String customMessage, Object... args) {
     super(customMessage);
     this.errorCode = errorCode;
+    this.args = args;
   }
 
-  public AppException(ErrorCode errorCode, Throwable cause) {
-    super(errorCode.getMessage(), cause);
+  public AppException(ErrorCode errorCode, Throwable cause, Object... args) {
+    super(errorCode.getMessageKey(), cause);
     this.errorCode = errorCode;
+    this.args = args;
   }
 
-  public AppException(ErrorCode errorCode, String customMessage, Throwable cause) {
+  public AppException(ErrorCode errorCode, String customMessage, Throwable cause, Object... args) {
     super(customMessage, cause);
     this.errorCode = errorCode;
+    this.args = args;
   }
 }

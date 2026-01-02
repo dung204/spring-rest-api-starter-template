@@ -83,7 +83,7 @@ public class AuthController {
 
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
-      .message("Login successfully")
+      .message("auth.login.success")
       .data(authToken)
       .build();
   }
@@ -125,7 +125,7 @@ public class AuthController {
 
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
-      .message("Registration successful")
+      .message("auth.register.success")
       .data(authToken)
       .build();
   }
@@ -156,7 +156,7 @@ public class AuthController {
   ) {
     return SuccessResponseDTO.<AuthTokenDTO>builder()
       .status(201)
-      .message("Refresh token successfully")
+      .message("auth.refresh.success")
       .data(authService.refresh(refreshToken))
       .build();
   }

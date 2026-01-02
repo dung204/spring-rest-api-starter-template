@@ -24,6 +24,6 @@ public class ResetPasswordRequestDTO {
 
   @Schema(description = "The new password to set", example = SwaggerExamples.PASSWORD)
   @NotBlank
-  @Size(min = 6)
+  @Size(min = 6, message = "{auth.password.weak}")
   private String password;
 }

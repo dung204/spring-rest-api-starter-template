@@ -23,6 +23,6 @@ public class RegisterRequestDTO {
 
   @Schema(description = "The password of the user", example = SwaggerExamples.PASSWORD)
   @NotBlank
-  @Size(min = 6)
+  @Size(min = 6, message = "{auth.password.weak}")
   private String password;
 }

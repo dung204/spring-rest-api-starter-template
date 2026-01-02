@@ -3,7 +3,7 @@ package com.example.modules.auth.services;
 import static com.example.base.enums.ErrorCode.EMAIL_USED;
 import static com.example.base.enums.ErrorCode.INVALID_CREDENTIALS;
 import static com.example.base.enums.ErrorCode.PASSWORD_NOT_MATCH;
-import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
+import static com.example.base.enums.ErrorCode.TOKEN_REVOKED;
 import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -133,7 +133,7 @@ public class AuthServiceIntegrationTest extends BaseServiceIntegrationTest {
     authService.logout(user);
 
     AppException ex = assertThrows(AppException.class, () -> authService.refresh(refreshToken));
-    assertEquals(TOKEN_INVALIDATED, ex.getErrorCode());
+    assertEquals(TOKEN_REVOKED, ex.getErrorCode());
   }
 
   @Test

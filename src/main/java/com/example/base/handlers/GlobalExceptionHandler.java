@@ -25,9 +25,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(AppException.class)
-  public ResponseEntity<ErrorResponseDTO> handleBaseException(AppException e) {
+  public ResponseEntity<ErrorResponseDTO> handleAppException(AppException e) {
     ErrorCode errorCode = e.getErrorCode();
-
     ErrorResponseDTO response = ErrorResponseDTO.of(errorCode, e.getMessage());
 
     return ResponseEntity.status(errorCode.getStatus()).body(response);

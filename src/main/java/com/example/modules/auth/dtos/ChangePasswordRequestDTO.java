@@ -26,6 +26,6 @@ public class ChangePasswordRequestDTO {
     example = SwaggerExamples.PASSWORD
   )
   @NotBlank
-  @Size(min = 6)
+  @Size(min = 6, message = "{auth.password.weak}")
   private String newPassword;
 }

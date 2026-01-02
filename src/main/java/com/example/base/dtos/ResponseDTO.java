@@ -1,6 +1,7 @@
 package com.example.base.dtos;
 
 import com.example.base.utils.SwaggerExamples;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import lombok.Data;
@@ -24,12 +25,16 @@ public abstract class ResponseDTO {
 
   protected String message;
 
+  @JsonIgnore
+  protected Object[] messageArgs;
+
   @Schema(example = SwaggerExamples.TIMESTAMP, description = "Response timestamp")
   protected String timestamp = Instant.now().toString();
 
-  protected ResponseDTO(int status, String message) {
+  protected ResponseDTO(int status, String message, Object... messageArgs) {
     this.status = status;
     this.message = message;
+    this.messageArgs = messageArgs;
   }
 
   protected static int validateSuccessStatus(int status) {

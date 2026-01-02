@@ -12,13 +12,13 @@ public class JwtAuthenticationException extends RuntimeException {
   ErrorCode errorCode;
 
   public JwtAuthenticationException(ErrorCode errorCode) {
-    super(errorCode.getMessage());
+    super(errorCode.getMessageKey());
     this.errorCode = errorCode;
   }
 
   // Constructor kèm theo Throwable để hứng lỗi gốc của thư viện (nếu cần log)
   public JwtAuthenticationException(ErrorCode errorCode, Throwable cause) {
-    super(errorCode.getMessage(), cause);
+    super(errorCode.getMessageKey(), cause);
     this.errorCode = errorCode;
   }
 }

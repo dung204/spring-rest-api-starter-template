@@ -3,8 +3,8 @@ package com.example.modules.auth.services;
 import static com.example.base.enums.ErrorCode.EMAIL_USED;
 import static com.example.base.enums.ErrorCode.INVALID_CREDENTIALS;
 import static com.example.base.enums.ErrorCode.PASSWORD_NOT_MATCH;
-import static com.example.base.enums.ErrorCode.TOKEN_INVALIDATED;
 import static com.example.base.enums.ErrorCode.TOKEN_REQUIRED;
+import static com.example.base.enums.ErrorCode.TOKEN_REVOKED;
 import static com.example.base.enums.ErrorCode.USER_NOT_FOUND;
 
 import com.example.base.exceptions.AppException;
@@ -111,7 +111,7 @@ public class AuthService {
     final Date tokenIssuedAt = decodedRefreshToken.getPayload().getIssuedAt();
 
     if (jwtService.isTokenInvalidated(userId, tokenIssuedAt)) {
-      throw new AppException(TOKEN_INVALIDATED);
+      throw new AppException(TOKEN_REVOKED);
     }
 
     final User user = usersRepository

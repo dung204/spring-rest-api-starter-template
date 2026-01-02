@@ -36,7 +36,7 @@ public class ErrorResponseDTO extends ResponseDTO {
     return new ErrorResponseDTO(
       errorCode.getStatus().value(),
       errorCode.getCode(),
-      errorCode.getMessage(),
+      errorCode.getMessageKey(),
       null
     );
   }
@@ -54,7 +54,7 @@ public class ErrorResponseDTO extends ResponseDTO {
     return new ErrorResponseDTO(
       ErrorCode.VALIDATION_ERROR.getStatus().value(),
       ErrorCode.VALIDATION_ERROR.getCode(),
-      ErrorCode.VALIDATION_ERROR.getMessage(),
+      ErrorCode.VALIDATION_ERROR.getMessageKey(),
       errors
     );
   }
